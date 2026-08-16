@@ -1,0 +1,42 @@
+/* ==============================================
+   HEADER Y ENCABEZADOS
+   ============================================== */
+
+.app-header {
+    margin-bottom: var(--space-20);
+}
+
+.app-header h1 {
+    color: var(--color-primary);
+    font-size: 24px;
+    text-align: center;
+    margin: 0;
+}
+
+/* Encabezado del documento generado */
+.bloque-encabezado {
+    margin-left: var(--encabezado-left);
+    margin-bottom: 0;
+}
+
+.linea-encabezado {
+    font-size: var(--fs-10);
+    line-height: var(--lh-base);
+    white-space: nowrap;
+}
+
+.titulo-documento {
+    font-size: var(--fs-11);
+    font-weight: var(--fw-bold);
+    text-transform: uppercase;
+    text-align: center;
+    text-decoration: underline;
+}
+
+.encabezado-secundario {
+    text-align: right;
+    font-size: var(--fs-11);
+    line-height: var(--lh-base);
+    margin-bottom: var(--margin-bottom-4);
+    color: var(--color-muted);
+}

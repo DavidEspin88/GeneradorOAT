@@ -1,0 +1,66 @@
+/* ==============================================
+   STYLE.CSS - ARCHIVO PRINCIPAL
+   Importa todos los módulos de estilos
+   ============================================== */
+
+/* ===== VARIABLES GLOBALES ===== */
+@import url('components/variables.css');
+
+/* ===== COMPONENTES ===== */
+@import url('components/header.css');
+@import url('components/forms.css');
+@import url('components/table.css');
+@import url('components/modal.css');
+@import url('components/document.css');
+@import url('components/responsive.css');
+@import url('components/dashboard.css');
+
+/* ===== RESET Y BASE ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-main);
+    background: var(--color-bg);
+    padding: var(--space-20);
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    max-width: var(--container-max);
+    width: 100%;
+}
+
+/* ===== BOTÓN GENERAR ===== */
+.btn-generar {
+    background: var(--color-primary);
+    color: var(--color-surface);
+    border: none;
+    padding: var(--btn-padding);
+    border-radius: var(--radius-md);
+    font-size: var(--fs-15);
+    font-weight: var(--fw-semibold);
+    cursor: pointer;
+    transition: var(--transition-base);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap-10);
+    width: 100%;
+    margin-top: 15px;
+}
+
+.btn-generar:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-btn-hover);
+}
+
+.btn-generar:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

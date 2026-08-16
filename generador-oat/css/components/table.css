@@ -1,0 +1,424 @@
+/* ==============================================
+   TABLA DE DATOS
+   ============================================== */
+
+.table-container {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+    padding: 15px;
+    margin-bottom: var(--space-20);
+    overflow: visible;
+}
+
+.table-container h3 {
+    color: var(--color-primary);
+    font-size: var(--fs-15);
+    margin-bottom: 10px;
+}
+
+.table-responsive {
+    overflow: visible;
+    width: 100%;
+}
+
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--fs-11);
+    table-layout: auto;
+}
+
+.table-container thead {
+    background: var(--color-primary);
+    color: white;
+}
+
+.table-container th {
+    padding: 8px 6px;
+    text-align: left;
+    font-weight: var(--fw-semibold);
+    white-space: nowrap;
+    font-size: 10px;
+}
+
+.table-container td {
+    padding: 6px 4px;
+    border-bottom: 1px solid var(--color-border);
+    word-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+    max-width: 200px;
+    font-size: 10px;
+    line-height: 1.3;
+}
+
+.table-container tbody tr {
+    transition: background 0.2s ease;
+    cursor: pointer;
+}
+
+.table-container tbody tr:hover {
+    background: #f5f5f5;
+}
+
+.table-container .fila-seleccionada {
+    background: #e3f2fd !important;
+    border-left: 3px solid var(--color-primary);
+}
+
+.empty-message {
+    text-align: center;
+    color: #999;
+    padding: 20px;
+}
+
+/* ===== ANCHOS DE COLUMNAS ===== */
+.table-container th:nth-child(1),
+.table-container td:nth-child(1) {
+    width: 40px;
+    text-align: center;
+}
+
+.table-container th:nth-child(2),
+.table-container td:nth-child(2),
+.table-container th:nth-child(3),
+.table-container td:nth-child(3) {
+    width: 75px;
+    text-align: center;
+}
+
+.table-container th:nth-child(4),
+.table-container td:nth-child(4),
+.table-container th:nth-child(5),
+.table-container td:nth-child(5),
+.table-container th:nth-child(6),
+.table-container td:nth-child(6) {
+    width: 90px;
+}
+
+.table-container th:nth-child(7),
+.table-container td:nth-child(7) {
+    width: 150px;
+}
+
+.table-container th:nth-child(8),
+.table-container td:nth-child(8),
+.table-container th:nth-child(9),
+.table-container td:nth-child(9) {
+    width: 110px;
+}
+
+.table-container th:nth-child(10),
+.table-container td:nth-child(10) {
+    width: 100px;
+}
+
+/* ===== TABLA DE OPERACIONES (Documento) ===== */
+.tabla-operaciones {
+    width: var(--table-width);
+    margin-left: var(--table-indent);
+    border-collapse: collapse;
+    font-family: var(--font-main);
+    font-size: var(--fs-11);
+}
+
+.tabla-operaciones th,
+.tabla-operaciones td {
+    border: var(--table-border);
+    padding: var(--table-cell-padding);
+    vertical-align: middle;
+}
+
+.tabla-operaciones th {
+    font-weight: var(--fw-bold);
+    text-align: center;
+    background: none;
+}
+
+.tabla-operaciones th:nth-child(1),
+.tabla-operaciones td:nth-child(1) {
+    width: var(--table-col-1);
+    text-align: center;
+}
+
+.tabla-operaciones th:nth-child(2),
+.tabla-operaciones td:nth-child(2) {
+    width: var(--table-col-2);
+    text-align: center;
+}
+
+.tabla-operaciones th:nth-child(3),
+.tabla-operaciones td:nth-child(3) {
+    width: var(--table-col-3);
+    text-align: left;
+}
+
+.tabla-operaciones .celda-vacio {
+    height: var(--table-empty-height);
+}
+
+.tabla-operaciones .text-center {
+    text-align: center;
+}
+
+/* ===== TABLA REGISTRO ===== */
+.tabla-registro {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-main);
+    font-size: var(--fs-11);
+    margin: 10px 0;
+}
+
+.tabla-registro th,
+.tabla-registro td {
+    border: var(--table-border);
+    padding: var(--table-cell-padding);
+    vertical-align: middle;
+    text-align: left;
+}
+
+.tabla-registro th {
+    font-weight: var(--fw-bold);
+    text-align: center;
+    background: #f5f5f5;
+}
+
+.tabla-registro td {
+    padding: 4px 6px;
+}
+
+.tabla-registro tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.tabla-registro tr:hover {
+    background: #e8f0fe;
+}
+/* ===== TABLA APOYO MINEDUC ===== */
+.tabla-apoyo-mineduc {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-main);
+    font-size: var(--fs-9);
+    margin: 10px 0;
+}
+
+.tabla-apoyo-mineduc th,
+.tabla-apoyo-mineduc td {
+    border: var(--table-border);
+    padding: var(--table-cell-padding);
+    vertical-align: middle;
+    text-align: left;
+}
+
+.tabla-apoyo-mineduc th {
+    font-weight: var(--fw-bold);
+    text-align: center;
+    background: #f5f5f5;
+}
+
+.tabla-apoyo-mineduc td {
+    padding: 4px 6px;
+}
+
+.tabla-apoyo-mineduc tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.tabla-apoyo-mineduc tr:hover {
+    background: #e8f0fe;
+}
+
+.tabla-apoyo-mineduc th:nth-child(1),
+.tabla-apoyo-mineduc td:nth-child(1) {
+    width: 120px;
+    text-align: center;
+}
+
+.tabla-apoyo-mineduc th:nth-child(2),
+.tabla-apoyo-mineduc td:nth-child(2) {
+    width: 40%;
+}
+
+.tabla-apoyo-mineduc th:nth-child(3),
+.tabla-apoyo-mineduc td:nth-child(3) {
+    width: 40%;
+}
+
+/* ===== TABLA RASTRILLAJE ===== */
+.tabla-rastrillaje {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-main);
+    font-size: var(--fs-9);
+    margin: 10px 0;
+}
+
+.tabla-rastrillaje th,
+.tabla-rastrillaje td {
+    border: var(--table-border);
+    padding: var(--table-cell-padding);
+    vertical-align: middle;
+    text-align: left;
+}
+
+.tabla-rastrillaje th {
+    font-weight: var(--fw-bold);
+    text-align: center;
+    background: #f5f5f5;
+}
+
+.tabla-rastrillaje td {
+    padding: 4px 6px;
+}
+
+.tabla-rastrillaje tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.tabla-rastrillaje tr:hover {
+    background: #e8f0fe;
+}
+
+.tabla-rastrillaje th:nth-child(1),
+.tabla-rastrillaje td:nth-child(1) {
+    width: 25%;
+}
+
+.tabla-rastrillaje th:nth-child(2),
+.tabla-rastrillaje td:nth-child(2) {
+    width: 35%;
+}
+
+.tabla-rastrillaje th:nth-child(3),
+.tabla-rastrillaje td:nth-child(3) {
+    width: 20%;
+    text-align: center;
+}
+
+.tabla-rastrillaje th:nth-child(4),
+.tabla-rastrillaje td:nth-child(4) {
+    width: 20%;
+    text-align: center;
+}
+
+/* ===== TABLA CAMEX EJES VIALES ===== */
+.tabla-camex-ejes-viales {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-main);
+    font-size: var(--fs-9);
+    margin: 10px 0;
+}
+
+.tabla-camex-ejes-viales th,
+.tabla-camex-ejes-viales td {
+    border: var(--table-border);
+    padding: var(--table-cell-padding);
+    vertical-align: middle;
+    text-align: left;
+}
+
+.tabla-camex-ejes-viales th {
+    font-weight: var(--fw-bold);
+    text-align: center;
+    background: #f5f5f5;
+}
+
+.tabla-camex-ejes-viales td {
+    padding: 4px 6px;
+}
+
+.tabla-camex-ejes-viales tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.tabla-camex-ejes-viales tr:hover {
+    background: #e8f0fe;
+}
+
+.tabla-camex-ejes-viales th:nth-child(1),
+.tabla-camex-ejes-viales td:nth-child(1) {
+    width: 20%;
+    text-align: center;
+}
+
+.tabla-camex-ejes-viales th:nth-child(2),
+.tabla-camex-ejes-viales td:nth-child(2) {
+    width: 25%;
+}
+
+.tabla-camex-ejes-viales th:nth-child(3),
+.tabla-camex-ejes-viales td:nth-child(3) {
+    width: 35%;
+}
+
+.tabla-camex-ejes-viales th:nth-child(4),
+.tabla-camex-ejes-viales td:nth-child(4) {
+    width: 20%;
+    text-align: center;
+}
+
+/* ===== BOTÓN VER ORDEN ===== */
+.btn-ver-orden {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    color: #1a237e;
+}
+
+.btn-ver-orden:hover {
+    background: #e3f2fd;
+    transform: scale(1.1);
+}
+
+/* ===== MODAL DE DETALLE ===== */
+.detail-modal .modal-content {
+    max-width: 1200px;
+}
+
+.detail-modal .modal-body {
+    overflow-y: auto;
+    max-height: 70vh;
+}
+
+.detail-modal table {
+    font-size: 10pt;
+}
+
+.detail-modal table th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.detail-modal table td {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Responsive para el modal de detalle */
+@media screen and (max-width: 768px) {
+    .detail-modal .modal-content {
+        width: 100%;
+        margin: 10px;
+        max-height: 98vh;
+    }
+    
+    .detail-modal table {
+        font-size: 9pt;
+        min-width: 700px;
+    }
+    
+    .detail-modal table td {
+        max-width: 120px;
+    }
+}

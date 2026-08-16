@@ -1,0 +1,157 @@
+/* ==============================================
+   RESPONSIVE
+   ============================================== */
+
+@media print {
+    .modal-content {
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+        max-height: 100%;
+    }
+    
+    .modal-header {
+        display: none;
+    }
+    
+    .modal-body {
+        padding: 0;
+        background: white;
+    }
+    
+    .modal-body #documentoRenderizado {
+        padding: 0;
+        box-shadow: none;
+    }
+    
+    .modal-body .page,
+    .modal-body .page-adicional {
+        box-shadow: none;
+        margin: 0;
+        padding: var(--page-padding);
+        page-break-after: always;
+        break-after: page;
+    }
+    
+    .btn-generar,
+    .selector-container,
+    .excel-upload,
+    .fecha-container {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .modal-content {
+        width: 100%;
+        margin: 10px;
+        max-height: 98vh;
+    }
+    
+    .modal-header {
+        padding: 10px 15px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .modal-actions {
+        justify-content: stretch;
+    }
+    
+    .modal-actions button {
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .modal-body {
+        padding: 10px;
+    }
+    
+    .modal-body .page,
+    .modal-body .page-adicional {
+        padding: var(--page-padding-mobile);
+        min-height: auto;
+    }
+    
+    .selector-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .selector-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .selector-group select {
+        min-width: 100%;
+    }
+    
+    .fecha-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .fecha-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .fecha-group input[type="date"] {
+        width: 100%;
+        min-width: unset;
+    }
+    
+    #fechaFormateada {
+        text-align: center;
+        min-width: unset;
+    }
+    
+    .fecha-buttons {
+        flex-direction: column;
+    }
+    
+    .btn-fecha-hoy,
+    .btn-fecha-manana {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .excel-upload {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .excel-upload input[type="file"] {
+        width: 100%;
+    }
+    
+    .table-container {
+        padding: 10px;
+        overflow-x: auto;
+    }
+    
+    .table-container table {
+        font-size: 9px;
+        min-width: 800px;
+    }
+    
+    .table-container th,
+    .table-container td {
+        padding: 4px 3px;
+        max-width: 120px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .table-container table {
+        font-size: 8px;
+        min-width: 700px;
+    }
+    
+    .app-header h1 {
+        font-size: 18px;
+    }
+}

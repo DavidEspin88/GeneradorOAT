@@ -1,0 +1,551 @@
+/* ==============================================
+   DOCUMENTO GENERADO (PÁGINAS A4)
+   ============================================== */
+
+.modal-body .page,
+.modal-body .page-adicional {
+    width: 100%;
+    max-width: var(--page-width);
+    min-height: var(--page-min-height);
+    background: var(--color-surface);
+    padding: var(--page-padding);
+    position: relative;
+    margin: 0 auto 20px auto;
+    font-family: var(--font-main);
+    font-size: var(--fs-11);
+    color: var(--color-text);
+    line-height: var(--lh-base);
+    box-shadow: var(--shadow-page);
+}
+
+.texto-secreto,
+.texto-secreto-pie {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-family: var(--font-main);
+    font-size: var(--fs-16);
+    font-weight: var(--fw-bold);
+    color: var(--color-danger);
+    text-transform: uppercase;
+    letter-spacing: var(--secret-letter-spacing);
+    margin: 0;
+    padding: 0;
+}
+
+.texto-secreto {
+    top: var(--secret-offset);
+}
+
+.texto-secreto-pie {
+    bottom: var(--secret-offset);
+}
+
+.bloque-encabezado {
+    margin-left: var(--encabezado-left);
+    margin-bottom: 0;
+}
+
+.linea-encabezado {
+    font-size: var(--fs-10);
+    line-height: var(--lh-base);
+    white-space: nowrap;
+}
+
+.titulo-documento {
+    font-size: var(--fs-11);
+    font-weight: var(--fw-bold);
+    text-transform: uppercase;
+    text-align: center;
+    text-decoration: underline;
+}
+
+.parrafo-asunto {
+    padding-left: var(--asunto-left);
+    text-indent: var(--asunto-hanging);
+    white-space: pre-wrap;
+    tab-size: var(--asunto-tab);
+    text-align: justify;
+    font-size: var(--fs-11);
+    line-height: var(--lh-base);
+    margin: 0;
+}
+
+.asunto-label {
+    font-weight: var(--fw-bold);
+}
+
+.parrafo-doc-titulo {
+    padding-left: var(--indent-5-8);
+    font-size: var(--fs-10);
+    text-align: justify;
+    line-height: var(--lh-base-doc);
+    margin: 0;
+}
+
+.doc-label {
+    font-weight: var(--fw-bold);
+}
+
+.item-docs {
+    padding-left: var(--indent-63-8);
+    text-indent: 0;
+    font-size: var(--fs-10);
+    line-height: var(--lh-base-doc);
+    text-align: left;
+    display: flex;
+}
+
+.item-docs .marcador {
+    width: var(--marker-28);
+    text-align: left;
+    font-weight: var(--fw-regular);
+    flex-shrink: 0;
+}
+
+.titulo-romano {
+    padding-left: var(--indent-14-17);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    font-weight: var(--fw-bold);
+    text-decoration: underline;
+    line-height: var(--lh-base);
+    text-align: justify;
+}
+
+.titulo-romano .marcador {
+    width: var(--marker-14);
+    text-align: left;
+    display: inline-block;
+    text-decoration: none !important;
+    font-weight: var(--fw-bold);
+    margin-right: var(--marker-gap);
+}
+
+.titulo-romano-2 {
+    padding-left: var(--indent-14-17);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-base);
+    text-align: justify;
+}
+
+.titulo-romano-2 .marcador {
+    width: var(--marker-14);
+    text-align: left;
+    display: inline-block;
+    margin-right: var(--marker-gap);
+    text-decoration: none !important;
+}
+
+.titulo-letra {
+    padding-left: var(--indent-28-35);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    font-weight: var(--fw-regular);
+    line-height: var(--lh-base);
+    text-align: justify;
+}
+
+.titulo-letra .marcador {
+    display: inline-block;
+    width: var(--marker-21);
+    text-align: left;
+}
+
+.titulo-letra-11 {
+    padding-left: var(--indent-28-35);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-base);
+    text-align: justify;
+}
+
+.titulo-letra-11 .marcador {
+    display: inline-block;
+    width: var(--marker-21);
+    text-align: left;
+}
+
+.titulo-num {
+    padding-left: var(--indent-52-9);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-base);
+    text-align: justify;
+}
+
+.titulo-num .marcador {
+    display: inline-block;
+    width: var(--marker-18);
+    text-align: left;
+}
+
+.titulo-num.tam-10 {
+    font-size: var(--fs-11);
+}
+
+.texto-situacion {
+    padding-left: var(--indent-27-2);
+    font-size: var(--fs-11);
+    text-align: justify;
+    line-height: var(--lh-base-doc);
+    margin: 0;
+}
+
+.texto-situacion-2 {
+    padding-left: var(--indent-27-2);
+    font-size: var(--fs-11);
+    text-align: justify;
+    line-height: var(--lh-base-doc);
+    margin: 0;
+}
+
+.texto-mision {
+    padding-left: var(--indent-28-35);
+    font-size: var(--fs-11);
+    text-align: justify;
+    line-height: var(--lh-base-doc);
+    margin: 0;
+}
+
+.texto-concepto {
+    padding-left: var(--indent-49-65);
+    font-size: var(--fs-11);
+    text-align: justify;
+    line-height: var(--lh-base-doc);
+    margin: 0;
+}
+
+.texto-indentado-70 {
+    padding-left: var(--indent-70-9);
+    font-size: var(--fs-11);
+    text-align: justify;
+    line-height: var(--lh-base);
+    margin: 0;
+}
+
+.text-doc {
+    margin: 0;
+}
+
+.anexo-nomina {
+    padding-left: var(--indent-6);
+    font-size: var(--fs-9);
+    line-height: var(--lh-base);
+    margin: 0;
+}
+
+.item-letra {
+    display: flex;
+    padding-left: var(--indent-60);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    text-align: justify;
+    line-height: var(--lh-base);
+}
+
+.item-letra .marcador {
+    width: var(--marker-18);
+    text-align: justify;
+    flex-shrink: 0;
+}
+
+.item-letra-85 {
+    display: flex;
+    align-items: flex-start;
+    padding-left: var(--indent-67-05);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    text-align: justify;
+    line-height: var(--lh-base);
+}
+
+.item-letra-85 .marcador {
+    width: var(--marker-18);
+    text-align: justify;
+    flex-shrink: 0;
+}
+
+.item-letra-71 {
+    display: flex;
+    padding-left: var(--indent-52-9);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    text-align: justify;
+    line-height: var(--lh-base);
+}
+
+.item-letra-71 .marcador {
+    width: var(--marker-18);
+    text-align: justify;
+}
+
+.item-letra-92 {
+    display: flex;
+    padding-left: var(--indent-74-15);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    text-align: justify;
+    line-height: var(--lh-base);
+}
+
+.item-letra-92 .marcador {
+    width: var(--marker-18);
+    text-align: justify;
+}
+
+.item-num-71 {
+    padding-left: var(--indent-52-9);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    line-height: var(--lh-base);
+}
+
+.item-num-71 .marcador {
+    display: inline-block;
+    width: var(--marker-18);
+    text-align: justify;
+}
+
+.item-vineta-99 {
+    display: flex;
+    padding-left: var(--indent-74-15);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    text-align: justify;
+    line-height: var(--lh-base);
+}
+
+.item-vineta-99 .marcador {
+    width: var(--marker-18);
+    text-align: justify;
+    flex-shrink: 0;
+}
+
+.item-vineta-106 {
+    display: flex;
+    flex-direction: row;
+    padding-left: var(--indent-88);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    text-align: justify;
+    line-height: var(--lh-base);
+}
+
+.item-vineta-106 .marcador {
+    width: var(--marker-18);
+    text-align: justify;
+    flex-shrink: 0;
+}
+
+.marcador {
+    font-weight: var(--fw-regular);
+}
+
+.vacio {
+    height: var(--empty-line);
+}
+
+.vacio-2 {
+    height: 15px;
+}
+
+.firma-aprueba {
+    font-size: var(--fs-11);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-base);
+}
+
+.firma-autentica {
+    font-size: var(--fs-11);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-base);
+}
+
+.espacio-firmas {
+    height: var(--firmas-space);
+}
+
+.firma-nombre {
+    text-align: center;
+    font-size: var(--fs-11);
+    line-height: var(--lh-base);
+}
+
+.firma-grado {
+    text-align: center;
+    font-size: var(--fs-11);
+    line-height: var(--lh-base);
+}
+
+.firma-cargo {
+    text-align: center;
+    font-size: var(--fs-11);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-base);
+}
+
+.firma-nombre-izq {
+    text-align: left;
+    font-size: var(--fs-11);
+    line-height: var(--lh-base);
+}
+
+.firma-grado-izq {
+    text-align: left;
+    font-size: var(--fs-11);
+    line-height: var(--lh-base);
+}
+
+.firma-cargo-izq {
+    text-align: left;
+    font-size: var(--fs-11);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-base);
+}
+
+.anexos-titulo {
+    font-size: var(--fs-9);
+    font-weight: var(--fw-regular);
+    line-height: var(--lh-base);
+}
+
+.anexo-item {
+    font-size: var(--fs-8);
+    line-height: var(--lh-base);
+    text-align: justify;
+}
+
+.gpsg {
+    font-size: var(--fs-9);
+    line-height: var(--lh-base);
+}
+
+.encabezado-secundario {
+    text-align: right;
+    font-size: var(--fs-11);
+    line-height: var(--lh-base);
+    margin-bottom: var(--margin-bottom-4);
+    color: var(--color-muted);
+}
+
+.numeracion {
+    position: absolute;
+    bottom: var(--page-number-offset);
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    font-family: var(--font-main);
+    font-size: var(--fs-11);
+    color: var(--color-text);
+    margin: 0;
+    padding: 0;
+}
+
+.contenido-pagina {
+    flex: 1;
+    position: relative;
+    overflow: visible;
+}
+
+/* ==============================================
+   VIÑETAS Y SUB-ITEMS
+   ============================================== */
+
+/* Para sub-items dentro de listas */
+.item-vineta-99 {
+    display: flex;
+    padding-left: var(--indent-74-15);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    text-align: justify;
+    line-height: var(--lh-base);
+    margin: 0;
+}
+
+.item-vineta-99 .marcador {
+    width: var(--marker-18);
+    text-align: left;
+    flex-shrink: 0;
+    padding-right: 4px;
+}
+
+.item-vineta-106 {
+    display: flex;
+    flex-direction: row;
+    padding-left: var(--indent-88);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    text-align: justify;
+    line-height: var(--lh-base);
+    margin: 0;
+}
+
+.item-vineta-106 .marcador {
+    width: var(--marker-18);
+    text-align: left;
+    flex-shrink: 0;
+    padding-right: 4px;
+}
+
+/* Para items principales con marcadores de letras */
+.item-letra {
+    display: flex;
+    padding-left: var(--indent-60);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    text-align: justify;
+    line-height: var(--lh-base);
+    margin: 0;
+}
+
+.item-letra .marcador {
+    width: var(--marker-18);
+    text-align: left;
+    flex-shrink: 0;
+    padding-right: 4px;
+}
+
+.item-letra-85 {
+    display: flex;
+    align-items: flex-start;
+    padding-left: var(--indent-67-05);
+    text-indent: 0;
+    font-size: var(--fs-11);
+    text-align: justify;
+    line-height: var(--lh-base);
+    margin: 0;
+}
+
+.item-letra-85 .marcador {
+    width: var(--marker-18);
+    text-align: left;
+    flex-shrink: 0;
+    padding-right: 4px;
+}
+
+.text-doc {
+    margin: 0;
+    flex: 1;
+}
+
+/* ==============================================
+   AUTORIDAD EN EL DOCUMENTO
+   ============================================== */
+
+.texto-autoridad {
+    font-size: var(--fs-11);
+    line-height: var(--lh-base);
+    padding-left: var(--indent-27-2);
+    text-align: justify;
+    margin: 0;
+}
+
+.autoridad-label {
+    font-weight: var(--fw-bold);
+}

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Órdenes de Acción Táctica</title>
+    
+    <!-- ===== CSS ===== -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- ===== FONTS & ICONS ===== -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/brands.min.css" integrity="sha512-JvNYE/c3wl/dRKs3ZHX+QHe21Et1/ouedfAKJsQPB0XJ+QjVWipm2MVgK3BgrJbdTBXTg/r4rmY4nj6fuzWPyg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- ===== XLSX (CDN) ===== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <!-- ===== HTML2PDF.JS (CDN) ===== -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" 
+            integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" 
+            crossorigin="anonymous" 
+            referrerpolicy="no-referrer">
+    </script>
+
+<body>
+    <div class="container">
+
+        <!-- ==============================================
+             VISTA: DASHBOARD PRINCIPAL
+             ============================================== -->
+        <div id="vistaDashboard" class="vista-dashboard">
+
+            <div class="dash-header">
+                <div class="dash-header-titulo">
+                    <span class="dash-eyebrow"><span class="dash-dot"></span>Sistema</span>
+                    <h1>Gestión de Operaciones</h1>
+                    <p>Panel principal</p>
+                </div>
+            </div>
+
+            <p class="dash-seccion-label">Archivo de Operaciones</p>
+
+            <!-- ===== CARGA DE EXCEL (mismos IDs que antes) ===== -->
+            <section class="excel-upload dashboard-excel-upload" id="excelUpload">
+                <label for="subirExcel">Cargar archivo Excel</label>
+                <input type="file" id="subirExcel" accept=".xlsx, .xls">
+                <span id="estadoCarga" class="estado-carga">Sin archivo cargado</span>
+            </section>
+
+            <div class="dash-indicadores">
+                <div class="dash-indicador">
+                    <span class="dash-indicador-numero" id="dashIndicadorOats">—</span>
+                    <span class="dash-indicador-label">OATs agrupadas</span>
+                </div>
+                <div class="dash-indicador">
+                    <span class="dash-indicador-numero" id="dashIndicadorOperaciones">—</span>
+                    <span class="dash-indicador-label">Operaciones cargadas</span>
+                </div>
+            </div>
+
+            <p class="dash-seccion-label">Módulos</p>
+
+            <!-- ===== TARJETAS DE NAVEGACIÓN ===== -->
+            <div class="dashboard-cards">
+                <button id="btnIrCrearOrden" class="dashboard-card" disabled>
+                    <i class="fa-solid fa-file-word"></i>
+                    <span class="dash-card-texto">
+                        <span>Crear Orden de Operación</span>
+                        <span class="dash-card-desc">Gestión y generación de órdenes de acción táctica</span>
+                        <span class="dash-card-cta">Abrir módulo →</span>
+                    </span>
+                </button>
+                <button id="btnIrMatrizCumplimiento" class="dashboard-card dashboard-card-secundaria" disabled>
+                    <i class="fa-solid fa-table-list"></i>
+                    <span class="dash-card-texto">
+                        <span>Matriz de Cumplimiento</span>
+                        <span class="dash-card-desc">Análisis de operaciones por fecha, hora y cantón</span>
+                        <span class="dash-card-cta">Ver matriz →</span>
+                    </span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==============================================
+             VISTA: CREAR ORDEN DE OPERACIÓN
+             (todo el contenido y los IDs existentes, sin cambios,
+             solo envueltos en este contenedor oculto por defecto)
+             ============================================== -->
+        <div id="vistaCrearOrden" class="vista-crear-orden" style="display:none;">
+            <button id="btnVolverDashboard" class="btn-volver-dashboard">
+                <i class="fa-solid fa-arrow-left"></i> Volver al Dashboard
+            </button>
+
+            <!-- ===== HEADER ===== -->
+            <header class="app-header">
+                <h1>📄 Generador de Órdenes de Acción Táctica</h1>
+            </header>
+
+        <!-- ===== SELECTORES DE OFICIALES ===== -->
+        <section class="selector-container" id="selectorContainer">
+            <div class="selector-group">
+                <label for="comandanteSelect">Comandante:</label>
+                <select id="comandanteSelect">
+                    <option value="">-- Seleccionar --</option>
+                </select>
+                <select id="funcionComandanteSelect">
+                    <option value="">-- Función --</option>
+                </select>
+            </div>
+            <div class="selector-group">
+                <label for="oficialSelect">Oficial A3:</label>
+                <select id="oficialSelect">
+                    <option value="">-- Seleccionar --</option>
+                </select>
+                <select id="funcionOficialSelect">
+                    <option value="">-- Función --</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- ===== SELECTOR DE FECHA ===== -->
+        <section class="fecha-container" id="fechaContainer">
+            <div class="fecha-group">
+                <label for="fechaMision">📅 Fecha de la Misión:</label>
+                <input type="date" id="fechaMision">
+                <span id="fechaFormateada">📅 DD-HHMM-MES-AA</span>
+            </div>
+            <div class="fecha-buttons">
+                <button id="btnFechaHoy" class="btn-fecha-hoy">
+                    <i class="fa-solid fa-calendar-day"></i> Hoy
+                </button>
+                <button id="btnFechaManana" class="btn-fecha-manana">
+                    <i class="fa-solid fa-calendar-plus"></i> Mañana
+                </button>
+            </div>
+        </section>
+
+        <!-- ===== AUTORIDAD/GRUPO ASIGNADA LA SEGURIDAD ===== -->
+<section class="autoridad-container" id="autoridadContainer">
+    <div class="autoridad-group">
+        <label for="autoridadSeguridad">
+            <i class="fa-solid fa-user-shield"></i> AUTORIDAD/GRUPO ASIGNADA LA SEGURIDAD:
+        </label>
+        <input type="text" 
+               id="autoridadSeguridad" 
+               name="autoridadSeguridad"
+               placeholder="Ej: Capitán Pérez / Grupo de Seguridad Alpha"
+               class="autoridad-input">
+        <span id="autoridadInfo" class="autoridad-info">
+            <i class="fa-regular fa-circle-info"></i> Ingrese la autoridad o grupo asignado
+        </span>
+        <!-- ===== ORIGEN Y DESTINO ===== -->
+<section class="origen-destino-container" id="origenDestinoContainer">
+    <div class="origen-destino-group">
+        <!-- ORIGEN -->
+        <div class="select-group">
+            <label for="origenSelect">
+                <i class="fa-solid fa-location-dot"></i> ORIGEN:
+            </label>
+            <select id="origenSelect" class="lugar-select">
+                <option value="">-- Seleccionar Origen --</option>
+            </select>
+            <span id="origenCoordenadas" class="coordenadas-info">
+                <i class="fa-regular fa-map"></i> Coordenadas: --
+            </span>
+        </div>
+
+        <!-- DESTINO -->
+        <div class="select-group">
+            <label for="destinoSelect">
+                <i class="fa-solid fa-flag-checkered"></i> DESTINO:
+            </label>
+            <select id="destinoSelect" class="lugar-select">
+                <option value="">-- Seleccionar Destino --</option>
+            </select>
+            <span id="destinoCoordenadas" class="coordenadas-info">
+                <i class="fa-regular fa-map"></i> Coordenadas: --
+            </span>
+        </div>
+    </div>
+</section>
+<!-- ===== GRUPO/UNIDAD RESPONSABLE ===== -->
+<section class="unidad-responsable-container" id="unidadResponsableContainer">
+    <div class="unidad-responsable-group">
+        <label for="unidadResponsableSelect">
+            <i class="fa-solid fa-users"></i> GRUPO/UNIDAD RESPONSABLE:
+        </label>
+        <select id="unidadResponsableSelect" class="unidad-select">
+            <option value="">-- Seleccionar Unidad --</option>
+        </select>
+        <span id="unidadResponsableInfo" class="unidad-info">
+            <i class="fa-regular fa-circle-info"></i> Unidad responsable de la operación
+        </span>
+    </div>
+</section>
+    </div>
+</section>
+
+        <!-- ===== TABLA DE DATOS ===== -->
+        <section id="contenedorTabla" class="table-container">
+            <h3>📊 Total de registros: <span id="contadorRegistros">0</span></h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:40px; text-align:center;">
+                                <input type="checkbox" id="chkSeleccionarTodas" style="width:16px; height:16px; cursor:pointer;" title="Seleccionar/Deseleccionar todas">
+                            </th>
+                            <th>Ord.</th>
+                            <th>Hora Inicio</th>
+                            <th>Hora Fin</th>
+                            <th>Provincia</th>
+                            <th>Cantón</th>
+                            <th>Parroquia</th>
+                            <th>Sector</th>
+                            <th>Acción</th>
+                            <th>Tipo Operación</th>
+                            <th>Acción Táctica</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaBody">
+                        <tr>
+                            <td colspan="11" class="empty-message">
+                                📭 Carga un archivo Excel para ver los datos
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ===== BOTÓN GENERAR ===== -->
+        <button class="btn-generar" id="btnGenerarSeleccion" disabled><i class="fa-solid fa-file-word"></i>Generar Documento desde selección</button>
+
+        </div>
+        <!-- ===== FIN VISTA CREAR ORDEN ===== -->
+
+        <!-- ==============================================
+             VISTA: MATRIZ DE CUMPLIMIENTO
+             ============================================== -->
+        <div id="vistaMatrizCumplimiento" class="vista-matriz" style="display:none;">
+            <button id="btnVolverDashboardMatriz" class="btn-volver-dashboard">
+                <i class="fa-solid fa-arrow-left"></i> Volver al Dashboard
+            </button>
+
+            <div class="matriz-header">
+                <span class="dash-eyebrow dash-eyebrow-olive"><span class="dash-dot"></span>Análisis</span>
+                <h1>Matriz de Cumplimiento</h1>
+                <p>Análisis de operaciones ejecutadas por período, horario, cantón y tipo de operación</p>
+            </div>
+
+            <section class="matriz-filtros">
+                <p class="matriz-filtros-titulo">Filtros de Consulta</p>
+                <div class="matriz-filtros-fila">
+                    <div class="matriz-filtro-grupo">
+                        <label for="matrizFechaInicio">Fecha inicio</label>
+                        <input type="date" id="matrizFechaInicio">
+                    </div>
+                    <div class="matriz-filtro-grupo">
+                        <label for="matrizHoraInicio">Hora inicio</label>
+                        <input type="time" id="matrizHoraInicio">
+                    </div>
+                    <div class="matriz-filtro-grupo">
+                        <label for="matrizFechaFin">Fecha fin</label>
+                        <input type="date" id="matrizFechaFin">
+                    </div>
+                    <div class="matriz-filtro-grupo">
+                        <label for="matrizHoraFin">Hora fin</label>
+                        <input type="time" id="matrizHoraFin">
+                    </div>
+                    <button id="btnCalcularMatriz" class="btn-calcular-matriz">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i> Consultar
+                    </button>
+                </div>
+            </section>
+
+            <section id="matrizResultados" class="matriz-resultados" style="display:none;">
+                <div class="matriz-resumen">
+                    <div class="matriz-resumen-item">
+                        <h4>Período Analizado</h4>
+                        <div id="matrizRangoAnalizado"></div>
+                    </div>
+                    <div class="matriz-resumen-item">
+                        <h4>Hojas Analizadas</h4>
+                        <div id="matrizPestanasProcesadas"></div>
+                    </div>
+                    <div class="matriz-resumen-item matriz-kpi-principal">
+                        <h4>Operaciones Cumplidas</h4>
+                        <div id="matrizTotalCumplidas" class="matriz-total-numero"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3>Operaciones por Cantón</h3>
+                    <div id="matrizTablaCanton"></div>
+                </div>
+
+                <div>
+                    <h3>Cantón y Tipo de Operación</h3>
+                    <div id="matrizTablaCantonTipo"></div>
+                </div>
+
+                <!-- ✅ NUEVA TABLA DE RESUMEN (reemplaza al gráfico) -->
+                <div>
+                    <h3>RESUMEN DE OPERACIONES POR CANTÓN</h3>
+                    <div id="matrizTablaResumen" class="matriz-tabla-contenedor" style="background: var(--dash-surface); border: 1px solid var(--dash-line); border-radius: var(--dash-radius); padding: 20px 22px;">
+                        <!-- La tabla se renderiza dinámicamente desde el controlador -->
+                    </div>
+                </div>
+
+                <!-- ✅ ELIMINAR el contenedor del gráfico anterior -->
+                <!-- <div id="matrizGraficoContenedor" class="matriz-grafico-contenedor"> ... </div> -->
+
+                <div>
+                    <h3>Detalle (validación)</h3>
+                    <div id="matrizTablaDetalle" class="matriz-detalle-scroll"></div>
+                    <div id="matrizDetalleInfo" class="matriz-detalle-info"></div>
+                    <div id="matrizDetallePaginacion" class="matriz-detalle-paginacion"></div>
+                </div>
+            </section>
+        </div>
+        <!-- ===== FIN VISTA MATRIZ DE CUMPLIMIENTO ===== -->
+
+<!-- ===== MODAL ===== -->
+<div id="modalDocumento" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>📄 Orden de Acción Táctica</h2>
+            <div class="modal-actions">
+                <button id="btnDescargarWord" class="btn-download">
+                    <i class="fa-solid fa-file-pdf"></i> Descargar PDF
+                </button>
+                <button id="btnImprimirModal" class="btn-print">
+                    <i class="fa-solid fa-print"></i> Imprimir
+                </button>
+                <button id="btnCerrarModal" class="btn-close">
+                    <i class="fa-solid fa-times"></i> Cerrar
+                </button>
+            </div>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <div id="documentoRenderizado"></div>
+        </div>
+    </div>
+</div>
+
+    <!-- ===== JS MODULAR ===== -->
+    <script type="module" src="js/app.js"></script>
+    <script type="module" src="js/controllers/dashboard-view.js"></script>
+</body>
+</html>

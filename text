@@ -1,0 +1,34 @@
+
+## 🛠️ Instalación
+
+1. Clonar el repositorio
+2. No requiere dependencias (usar CDN para XLSX)
+3. Abrir `index.html` en el navegador
+
+## 📦 Dependencias
+
+- **XLSX**: Para lectura de archivos Excel (CDN)
+- **Font Awesome**: Para íconos (CDN)
+
+## 🔧 Configuración
+
+### Mapeo de Columnas Excel
+
+El mapeo por defecto es:
+- Columna B (1): Hora Inicio
+- Columna C (2): Hora Final  
+- Columna D (3): Provincia
+- Columna E (4): Cantón
+- Columna G (6): Sector
+- Columna H (7): Acción
+- Columna I (8): Tipo Operación
+- Columna Y (24): Acción Táctica
+
+Para cambiar el mapeo, modificar en `utils/excel-reader.js`:
+
+```javascript
+this.mapeoColumnas = {
+    horaInicio: 1,
+    horaFinal: 2,
+    // ...
+};
