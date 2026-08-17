@@ -5,7 +5,7 @@
 export const OficialesSuperiores = [
     { id: 1, nombre: "Johnny Minchala Redrován", grado: "Coronel EMT. Avc." },
     { id: 2, nombre: "Roberto Carlos Ayala Pozo", grado: "Teniente Coronel EMT. Avc." },
-    { id: 3, nombre: "Robert Xavier Alarcon Luna", grado: "Capitán Téc. Avc." },
+    { id: 3, nombre: "Robert Xavier Alarcón Luna", grado: "Capitán Téc. Avc." },
     { id: 4, nombre: "Danny Gabriel Gamboa Nicolalde", grado: "Subteniente Téc. Avc." }
     
 ];
@@ -29,9 +29,9 @@ export const documentos = [
     "Acuerdo Ministerial Nro. 145, 2023.",
     "Decreto Ejecutivo 423 del 16 de junio de 2026",
     "Decreto Ejecutivo 424 del 18 de junio de 2026",
-    "Decreto Ejecutivo 472 del 14 de Agosto de 2026",
+    "Decreto Ejecutivo 472 del 14 de agosto de 2026",
     'Orden de Operaciones Nro. 002-2026 "ALFARO-CAI"',
-    'Orden Fragmentaria Nro. FA-JKF-2026-012-S "GENIO-CAI"',
+    'Orden Fragmentaria Nro. FTCM-GTAGUILA-2026-012-S "GENIO-CAI"',
     'Orden de Operaciones Nro. 003-2026 "ALFARO VIII"',
     'Orden Fragmentaria Nro. FTCM-GTAGUILA-2026-013-S "GENIO II"'
 ];
