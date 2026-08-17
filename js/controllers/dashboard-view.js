@@ -1,11 +1,6 @@
 // ==============================================
 // DASHBOARD-VIEW.JS
-// Controla únicamente la navegación entre el Dashboard Principal, la
-// vista "Crear Orden de Operación" y la vista "Matriz de Cumplimiento".
-// No contiene ninguna lógica de negocio (carga de Excel, agrupación,
-// generación de documentos, cálculo de la matriz, etc.) — toda esa
-// lógica sigue exactamente igual dentro de AppController y
-// MatrizController.
+// Controla la navegación entre vistas mediante el sidebar.
 // ==============================================
 
 import { MatrizController } from './matriz-controller.js';
@@ -14,75 +9,117 @@ document.addEventListener('DOMContentLoaded', () => {
     const vistaDashboard = document.getElementById('vistaDashboard');
     const vistaCrearOrden = document.getElementById('vistaCrearOrden');
     const vistaMatriz = document.getElementById('vistaMatrizCumplimiento');
-    const btnIrCrearOrden = document.getElementById('btnIrCrearOrden');
-    const btnIrMatrizCumplimiento = document.getElementById('btnIrMatrizCumplimiento');
-    const btnVolverDashboard = document.getElementById('btnVolverDashboard');
-    const btnVolverDashboardMatriz = document.getElementById('btnVolverDashboardMatriz');
+    
+    // Elementos del sidebar
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    const headerTitulo = document.getElementById('headerTitulo');
+    const headerDescripcion = document.getElementById('headerDescripcion');
+    const headerIcono = document.getElementById('headerIcono');
 
-    if (!vistaDashboard || !vistaCrearOrden) {
-        console.warn('⚠️ dashboard-view: no se encontraron las vistas esperadas en el DOM');
-        return;
-    }
+    // Configuración de las vistas
+    const VISTAS_CONFIG = {
+        dashboard: {
+            id: 'vistaDashboard',
+            titulo: 'Panel Principal',
+            descripcion: 'Gestión de operaciones',
+            icono: 'fa-solid fa-house'
+        },
+        'crear-orden': {
+            id: 'vistaCrearOrden',
+            titulo: 'Crear Orden de Operación',
+            descripcion: 'Gestión y generación de órdenes de acción táctica',
+            icono: 'fa-solid fa-file-pen'
+        },
+        matriz: {
+            id: 'vistaMatrizCumplimiento',
+            titulo: 'Matriz de Cumplimiento',
+            descripcion: 'Análisis y seguimiento de las operaciones ejecutadas',
+            icono: 'fa-solid fa-table-list'
+        }
+    };
 
     const matrizController = new MatrizController();
 
     function ocultarTodasLasVistas() {
-        vistaDashboard.style.display = 'none';
-        vistaCrearOrden.style.display = 'none';
+        // Ocultar todas las vistas con display:none
+        if (vistaDashboard) vistaDashboard.style.display = 'none';
+        if (vistaCrearOrden) vistaCrearOrden.style.display = 'none';
         if (vistaMatriz) vistaMatriz.style.display = 'none';
+        
+        // Remover clase active de todas las vistas
+        document.querySelectorAll('.vista-panel').forEach(v => {
+            v.classList.remove('active');
+        });
     }
 
-    function mostrarDashboard() {
+    function mostrarVista(vistaNombre) {
+        const config = VISTAS_CONFIG[vistaNombre];
+        if (!config) return;
+
+        // Ocultar todas las vistas
         ocultarTodasLasVistas();
-        vistaDashboard.style.display = '';
+
+        // Mostrar la vista seleccionada
+        const vistaElement = document.getElementById(config.id);
+        if (vistaElement) {
+            vistaElement.style.display = '';
+            vistaElement.classList.add('active');
+        }
+
+        // Actualizar cabecera
+        if (headerTitulo) headerTitulo.textContent = config.titulo;
+        if (headerDescripcion) headerDescripcion.textContent = config.descripcion;
+        if (headerIcono) headerIcono.className = config.icono;
+
+        // Actualizar sidebar
+        sidebarLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.dataset.vista === vistaNombre) {
+                link.classList.add('active');
+            }
+        });
     }
 
-    function mostrarCrearOrden() {
-        ocultarTodasLasVistas();
-        vistaCrearOrden.style.display = '';
-    }
+    // ==============================================
+    // EVENTOS DEL SIDEBAR
+    // ==============================================
 
-    function mostrarMatriz() {
-        if (!vistaMatriz) return;
-        ocultarTodasLasVistas();
-        vistaMatriz.style.display = '';
-    }
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            const vista = link.dataset.vista;
+            if (vista) {
+                mostrarVista(vista);
+            }
+        });
+    });
 
-    // ✅ Navegación Dashboard → Crear Orden de Operación
+    // ==============================================
+    // MANTENER COMPATIBILIDAD CON BOTONES EXISTENTES
+    // ==============================================
+
+    const btnIrCrearOrden = document.getElementById('btnIrCrearOrden');
+    const btnIrMatrizCumplimiento = document.getElementById('btnIrMatrizCumplimiento');
+
     if (btnIrCrearOrden) {
         btnIrCrearOrden.addEventListener('click', () => {
-            if (btnIrCrearOrden.disabled) return;
-            mostrarCrearOrden();
+            if (!btnIrCrearOrden.disabled) {
+                mostrarVista('crear-orden');
+            }
         });
     }
 
-    // ✅ Navegación Crear Orden de Operación → Dashboard
-    if (btnVolverDashboard) {
-        btnVolverDashboard.addEventListener('click', () => {
-            mostrarDashboard();
-        });
-    }
-
-    // ✅ Navegación Dashboard → Matriz de Cumplimiento
     if (btnIrMatrizCumplimiento) {
         btnIrMatrizCumplimiento.addEventListener('click', () => {
-            if (btnIrMatrizCumplimiento.disabled) return;
-            mostrarMatriz();
+            if (!btnIrMatrizCumplimiento.disabled) {
+                mostrarVista('matriz');
+            }
         });
     }
 
-    // ✅ Navegación Matriz de Cumplimiento → Dashboard
-    if (btnVolverDashboardMatriz) {
-        btnVolverDashboardMatriz.addEventListener('click', () => {
-            mostrarDashboard();
-        });
-    }
+    // ==============================================
+    // EVENTO DE CARGA DE EXCEL
+    // ==============================================
 
-    // ✅ Habilita las tarjetas del Dashboard en cuanto el Excel se cargó
-    // correctamente, y le pasa los mismos registros ya cargados a la
-    // Matriz de Cumplimiento (el usuario NO vuelve a cargar el Excel).
-    // Escucha el evento personalizado que AppController dispara al
-    // terminar de cargar (ver app-controller.js, onCargarExcel).
     document.addEventListener('oat:excel-cargado', (evento) => {
         if (btnIrCrearOrden) {
             btnIrCrearOrden.disabled = false;
@@ -94,9 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const detalle = evento.detail || {};
         matrizController.setDatos(detalle.registros, detalle.pestanasProcesadas);
 
-        // ✅ Cambio puramente visual: refleja los mismos totales que ya
-        // muestra #estadoCarga (sin recalcular nada) en los dos
-        // indicadores grandes del Dashboard.
         const indicadorOats = document.getElementById('dashIndicadorOats');
         const indicadorOperaciones = document.getElementById('dashIndicadorOperaciones');
         if (indicadorOats && typeof detalle.totalGrupos === 'number') {
@@ -107,6 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Estado inicial: siempre arrancar en el Dashboard.
-    mostrarDashboard();
+    // ==============================================
+    // INICIALIZACIÓN
+    // ==============================================
+
+    mostrarVista('dashboard');
 });

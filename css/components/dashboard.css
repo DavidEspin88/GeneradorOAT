@@ -187,7 +187,7 @@
 }
 
 .dashboard-excel-upload label[for="subirExcel"]::before {
-    content: '\f56e'; /* fa-file-import */
+    content: '\f56e';
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
     color: var(--dash-blue);
@@ -888,16 +888,15 @@
     font-family: var(--dash-font-ui) !important;
     padding: 20px !important;
 }
+
 /* ==============================================
    MATRIZ DE CUMPLIMIENTO - TABLA DE RESUMEN
    ============================================== */
 
-/* Contenedor de la tabla de resumen */
 .matriz-tabla-contenedor {
     overflow-x: auto;
 }
 
-/* La tabla de resumen usa las mismas reglas que la tabla cantón x tipo */
 #matrizTablaResumen table {
     width: 100%;
     border-collapse: collapse;
@@ -959,23 +958,443 @@
     border-top: 2px solid var(--dash-line-strong);
 }
 
-/* Mensaje sin datos */
-.matriz-sin-datos {
-    text-align: center !important;
-    color: var(--dash-muted);
-    font-family: var(--dash-font-ui) !important;
-    padding: 20px !important;
-}
-
-/* Responsive para la tabla de resumen */
 @media (max-width: 768px) {
     #matrizTablaResumen table {
         font-size: 11px;
         min-width: 600px;
     }
-    
     #matrizTablaResumen th,
     #matrizTablaResumen td {
         padding: 6px 10px;
+    }
+}
+
+/* ==============================================
+   LAYOUT PRINCIPAL CON SIDEBAR
+   ============================================== */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+body {
+    padding: 0 !important;
+    background: var(--dash-paper, #f3f4f6);
+}
+
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* ==============================================
+   SIDEBAR - VERSIÓN ÚNICA Y CORRECTA
+   ============================================== */
+
+.app-sidebar {
+    width: 240px;
+    min-height: 100vh;
+    background: #ffffff;
+    border-right: 1px solid var(--dash-line, #e2e4e9);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.sidebar-header {
+    padding: 20px 20px 16px 20px;
+    border-bottom: 1px solid var(--dash-line, #e2e4e9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* === LOGO VERTICAL (ÚNICA DEFINICIÓN) === */
+.sidebar-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--dash-font-ui, 'Inter', sans-serif);
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--dash-blue, #1a237e);
+    width: 100%;
+}
+
+.sidebar-logo img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--dash-olive, #5c6b3f);
+    flex-shrink: 0;
+    display: block;
+}
+
+.sidebar-logo .logo-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--dash-blue, #1a237e);
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+}
+
+.sidebar-subtitle {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--dash-muted, #6b7280);
+    letter-spacing: 0.05em;
+    padding: 0;
+}
+
+/* === NAVEGACIÓN === */
+.sidebar-nav {
+    flex: 1;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: var(--dash-radius-sm, 6px);
+    background: transparent;
+    color: var(--dash-ink-soft, #3d4354);
+    font-family: var(--dash-font-ui, 'Inter', sans-serif);
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: 100%;
+    text-align: left;
+}
+
+.sidebar-link i {
+    width: 20px;
+    font-size: 16px;
+    color: var(--dash-muted, #6b7280);
+    transition: color 0.15s ease;
+    flex-shrink: 0;
+}
+
+.sidebar-link:hover {
+    background: var(--dash-blue-soft, #eceefa);
+    color: var(--dash-blue, #1a237e);
+}
+
+.sidebar-link:hover i {
+    color: var(--dash-blue, #1a237e);
+}
+
+.sidebar-link.active {
+    background: var(--dash-blue-soft, #eceefa);
+    color: var(--dash-blue, #1a237e);
+    font-weight: 600;
+    position: relative;
+}
+
+.sidebar-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    background: var(--dash-blue, #1a237e);
+    border-radius: 0 3px 3px 0;
+}
+
+.sidebar-link.active i {
+    color: var(--dash-blue, #1a237e);
+}
+
+.sidebar-footer {
+    padding: 16px 20px;
+    border-top: 1px solid var(--dash-line, #e2e4e9);
+}
+
+.sidebar-version {
+    font-size: 11px;
+    color: var(--dash-muted, #6b7280);
+    font-weight: 500;
+}
+
+/* ==============================================
+   ÁREA DE CONTENIDO PRINCIPAL
+   ============================================== */
+
+.app-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--dash-paper, #f3f4f6);
+    overflow-x: hidden;
+    width: 100%;
+}
+
+/* ==============================================
+   CABECERA DINÁMICA
+   ============================================== */
+
+.app-header-dinamico {
+    background: #ffffff;
+    padding: 18px 32px;
+    border-bottom: 1px solid var(--dash-line, #e2e4e9);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    min-height: 72px;
+}
+
+.header-contexto {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-icono {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: var(--dash-blue-soft, #eceefa);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--dash-blue, #1a237e);
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.header-texto h1 {
+    font-family: var(--dash-font-ui, 'Inter', sans-serif);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--dash-ink, #171b26);
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+}
+
+.header-texto p {
+    font-family: var(--dash-font-ui, 'Inter', sans-serif);
+    font-size: 13px;
+    color: var(--dash-muted, #6b7280);
+    margin: 2px 0 0 0;
+}
+
+/* ==============================================
+   CONTENEDOR DE VISTAS
+   ============================================== */
+
+.app-vistas {
+    flex: 1;
+    padding: 24px 32px 32px 32px;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.vista-panel {
+    display: none;
+    animation: fadeInVista 0.25s ease;
+}
+
+.vista-panel.active {
+    display: block;
+}
+
+@keyframes fadeInVista {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==============================================
+   AJUSTES PARA VISTAS EXISTENTES
+   ============================================== */
+
+#vistaDashboard,
+#vistaCrearOrden,
+#vistaMatrizCumplimiento {
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#btnVolverDashboard,
+#btnVolverDashboardMatriz {
+    display: none !important;
+}
+
+#contenedorTabla {
+    width: 100%;
+}
+
+.vista-dashboard {
+    max-width: 100% !important;
+    padding: 0 !important;
+}
+
+.vista-matriz {
+    max-width: 100% !important;
+    padding: 0 !important;
+}
+
+/* ==============================================
+   OCULTAR MÓDULOS EN EL DASHBOARD
+   ============================================== */
+
+.dash-seccion-label {
+    display: none !important;
+}
+
+.dashboard-cards {
+    display: none !important;
+}
+
+/* ==============================================
+   RESPONSIVE
+   ============================================== */
+
+@media (max-width: 992px) {
+    .app-sidebar {
+        width: 200px;
+        min-width: 200px;
+    }
+    .app-header-dinamico {
+        padding: 14px 20px;
+    }
+    .app-vistas {
+        padding: 16px 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-sidebar {
+        width: 60px;
+        min-width: 60px;
+    }
+    
+    .sidebar-logo span,
+    .sidebar-subtitle,
+    .sidebar-link span,
+    .sidebar-version {
+        display: none;
+    }
+    
+    .sidebar-logo img {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--dash-olive, #5c6b3f);
+        flex-shrink: 0;
+        display: block;
+    }
+    
+    .sidebar-logo .logo-text {
+        display: none;
+    }
+    
+    .sidebar-header {
+        padding: 16px 12px;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .sidebar-link {
+        justify-content: center;
+        padding: 12px;
+        font-size: 0;
+    }
+    
+    .sidebar-link i {
+        font-size: 20px;
+        width: auto;
+    }
+    
+    .sidebar-link.active::before {
+        top: 4px;
+        bottom: 4px;
+    }
+    
+    .sidebar-footer {
+        padding: 12px;
+        text-align: center;
+    }
+    
+    .app-header-dinamico {
+        padding: 12px 16px;
+        min-height: 60px;
+    }
+    
+    .header-texto h1 {
+        font-size: 17px;
+    }
+    
+    .header-texto p {
+        font-size: 12px;
+    }
+    
+    .app-vistas {
+        padding: 12px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .app-sidebar {
+        width: 48px;
+        min-width: 48px;
+    }
+    
+    .sidebar-link {
+        padding: 10px;
+    }
+    
+    .sidebar-link i {
+        font-size: 17px;
+    }
+    
+    .header-icono {
+        width: 36px;
+        height: 36px;
+        font-size: 15px;
+    }
+    
+    .header-texto h1 {
+        font-size: 15px;
+    }
+    
+    .app-header-dinamico {
+        padding: 10px 12px;
+        min-height: 52px;
+    }
+    
+    .app-vistas {
+        padding: 10px 12px;
     }
 }
