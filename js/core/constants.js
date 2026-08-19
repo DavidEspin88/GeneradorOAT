@@ -3,7 +3,7 @@
 // ==============================================
 
 export const OficialesSuperiores = [
-    { id: 1, nombre: "Johnny Minchala Redrován", grado: "Coronel EMT. Avc." },
+    { id: 1, nombre: "Johnny Wilson Minchala Redrován", grado: "Coronel EMT. Avc." },
     { id: 2, nombre: "Roberto Carlos Ayala Pozo", grado: "Teniente Coronel EMT. Avc." },
     { id: 3, nombre: "Robert Xavier Alarcón Luna", grado: "Capitán Téc. Avc." },
     { id: 4, nombre: "Danny Gabriel Gamboa Nicolalde", grado: "Subteniente Téc. Avc." }
