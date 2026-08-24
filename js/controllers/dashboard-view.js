@@ -35,7 +35,13 @@ document.addEventListener('DOMContentLoaded', () => {
             titulo: 'Matriz de Cumplimiento',
             descripcion: 'Análisis y seguimiento de las operaciones ejecutadas',
             icono: 'fa-solid fa-table-list'
-        }
+        },
+        parte: {
+        id: 'vistaParte',
+        titulo: 'Parte al Instante',
+        descripcion: 'Generación de partes militares y mensajes',
+        icono: 'fa-solid fa-message'
+    }
     };
 
     const matrizController = new MatrizController();

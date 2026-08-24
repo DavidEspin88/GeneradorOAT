@@ -1,0 +1,343 @@
+/* ==============================================
+   PARTE-INSTANTANEO.CSS
+   Estilos aislados para el módulo "Parte al Instante"
+   Todos los selectores usan el prefijo .parte- para
+   no interferir con el resto del proyecto.
+   ============================================== */
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.parte-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.parte-container * {
+    box-sizing: border-box;
+}
+
+.parte-container form {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: #efebe7;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+/* ===== CAMPOS DEL FORMULARIO ===== */
+.parte-datos-formulario {
+    padding: 15px;
+}
+
+.parte-datos-formulario input,
+.parte-datos-formulario select {
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px;
+    border: 1px solid #000;
+}
+
+.parte-label {
+    font-weight: bolder;
+}
+
+#que-select.parte-select-ancho {
+    max-width: 100%;
+    width: 95%;
+}
+
+#accion-select.parte-select-completo,
+#fuente-select.parte-select-completo,
+#echos-select.parte-select-completo {
+    width: 100%;
+    padding: 15px;
+    margin-top: 5px;
+    border-radius: 8px;
+}
+
+/* ===== DATOS DONDE (grid) ===== */
+.parte-datos-donde {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.parte-datos-donde h3 {
+    grid-column: 1 / -1;
+    margin: 0 0 10px 0;
+}
+
+#sector-select.parte-select-medio,
+#coordenadas-select.parte-select-medio {
+    width: 60%;
+}
+
+.parte-datos-centrado {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+/* ===== ACCIONES TOMADAS ===== */
+#accion-select.parte-textarea-borde {
+    border: 1px dashed #000;
+    padding: 15px;
+    margin-top: 5px;
+    border-radius: 8px;
+    resize: none;
+}
+
+/* ===== RESULTADOS OBTENIDOS ===== */
+#resultados-select.parte-select-largo {
+    width: 80%;
+}
+
+/* ===== BOTONES DEL MÓDULO ===== */
+.parte-container button {
+    padding: 12px 20px;
+    color: #fff;
+    background-color: #1111df;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.parte-container button:hover {
+    background-color: #0000a0;
+}
+
+#btn-agregar.parte-btn-agregar:hover {
+    background-color: #f94b00;
+}
+
+/* ===== LISTA DE RESULTADOS ===== */
+#lista-resultados.parte-lista {
+    margin-top: 15px;
+    padding-left: 20px;
+}
+
+#lista-resultados.parte-lista li {
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+/* ===== ÁREA DE TEXTO ===== */
+.parte-datos-mensaje {
+    border: 1px dashed #000;
+    padding: 15px;
+    margin-top: 10px;
+    border-radius: 8px;
+}
+
+#textoWhatsapp.parte-textarea-mensaje {
+    width: 100%;
+    height: 40vh;
+    padding: 12px;
+    resize: vertical;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-family: inherit;
+}
+
+/* ==============================================
+   MODALES DEL MÓDULO (con prefijo .parte-)
+   ============================================== */
+
+.parte-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+}
+
+.parte-modal-contenido {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 650px;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    color: #333333;
+}
+
+.parte-modal-cerrar {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #555;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.parte-modal-cerrar:hover {
+    color: #000;
+}
+
+#cuerpo-modal.parte-cuerpo-modal p,
+#cuerpo-modal-cmdte.parte-cuerpo-modal p,
+#cuerpo-modal-militar.parte-cuerpo-modal p {
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+/* ==============================================
+   BOTÓN ENVIAR A GOOGLE DOCS
+   ============================================== */
+
+.parte-btn-google-docs {
+    margin-top: 15px;
+    text-align: right;
+}
+
+.parte-btn-google-docs button {
+    padding: 12px 20px;
+    color: #fff;
+    background-color: #1111df;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+}
+
+.parte-btn-google-docs button:hover {
+    background-color: #0000a0;
+}
+
+/* ==============================================
+   RESPONSIVE - MÓDULO PARTE
+   ============================================== */
+
+@media screen and (max-width: 768px) {
+    .parte-datos-donde {
+        grid-template-columns: 1fr;
+    }
+    
+    .parte-container form {
+        padding: 15px;
+    }
+    
+    .parte-datos-formulario input,
+    .parte-datos-formulario select {
+        margin: 6px;
+        width: 100%;
+    }
+    
+    #sector-select.parte-select-medio,
+    #coordenadas-select.parte-select-medio {
+        width: 100%;
+    }
+    
+    #resultados-select.parte-select-largo {
+        width: 100%;
+    }
+    
+    .parte-datos-centrado {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .parte-datos-centrado button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    #textoWhatsapp.parte-textarea-mensaje {
+        height: 30vh;
+    }
+    
+    .parte-modal-contenido {
+        width: 95%;
+        padding: 15px;
+        max-height: 90vh;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .parte-container form {
+        padding: 10px;
+    }
+    
+    .parte-datos-formulario {
+        padding: 8px;
+    }
+    
+    #textoWhatsapp.parte-textarea-mensaje {
+        height: 25vh;
+    }
+}
+/* ==============================================
+   ESTILOS PARA SELECTOR DE COMANDANTE (PARTE)
+   ============================================== */
+
+.parte-container .selector-container {
+    background: var(--color-surface, #ffffff);
+    padding: 15px 20px;
+    border-radius: var(--radius-lg, 12px);
+    box-shadow: var(--shadow-card, 0 2px 12px rgba(0,0,0,0.08));
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+}
+
+.parte-container .selector-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.parte-container .selector-group label {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--color-primary, #1a237e);
+}
+
+.parte-container .selector-group select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--color-border, #d0d0d0);
+    font-size: 13px;
+    min-width: 200px;
+    background: var(--color-input-bg, #f8f9fa);
+    cursor: pointer;
+}
+
+.parte-container .selector-group select:focus {
+    border-color: var(--color-primary, #1a237e);
+    outline: none;
+}
+
+@media screen and (max-width: 768px) {
+    .parte-container .selector-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .parte-container .selector-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .parte-container .selector-group select {
+        min-width: 100%;
+        width: 100%;
+    }
+}

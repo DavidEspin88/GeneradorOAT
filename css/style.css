@@ -15,6 +15,9 @@
 @import url('components/responsive.css');
 @import url('components/dashboard.css');
 
+/* ===== NUEVO: PARTE AL INSTANTE ===== */
+@import url('components/parte-instantaneo.css');
+
 /* ===== RESET Y BASE ===== */
 * {
     margin: 0;

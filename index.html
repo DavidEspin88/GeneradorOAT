@@ -1,30 +1,34 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Órdenes de Acción Táctica</title>
-    
+
     <!-- ===== CSS ===== -->
     <link rel="stylesheet" href="css/style.css">
-    
+
     <!-- ===== FONTS & ICONS ===== -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/brands.min.css" integrity="sha512-JvNYE/c3wl/dRKs3ZHX+QHe21Et1/ouedfAKJsQPB0XJ+QjVWipm2MVgK3BgrJbdTBXTg/r4rmY4nj6fuzWPyg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/brands.min.css"
+        integrity="sha512-JvNYE/c3wl/dRKs3ZHX+QHe21Et1/ouedfAKJsQPB0XJ+QjVWipm2MVgK3BgrJbdTBXTg/r4rmY4nj6fuzWPyg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <!-- ===== XLSX (CDN) ===== -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <!-- ===== HTML2PDF.JS (CDN) ===== -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" 
-            integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" 
-            crossorigin="anonymous" 
-            referrerpolicy="no-referrer">
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+        integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+        </script>
 
 <body>
     <!-- ==============================================
@@ -35,35 +39,39 @@
         <!-- ==============================================
              SIDEBAR PERSISTENTE
              ============================================== -->
-<aside class="app-sidebar" id="appSidebar">
-    <div class="sidebar-header">
-        <div class="sidebar-logo">
-            <img src="imagen/SELLO GOMAI.jpg" alt="sello Gomai">
-            <span class="logo-text">GOMAI</span>
-            <span class="sidebar-subtitle">Sistema de Operaciones</span>
-        </div>
-    </div>
-    
-    <nav class="sidebar-nav">
-        <button class="sidebar-link active" data-vista="dashboard">
-            <i class="fa-solid fa-house"></i>
-            <span>Inicio</span>
-        </button>
-        <button class="sidebar-link" data-vista="crear-orden" id="sidebarCrearOrden">
-            <i class="fa-solid fa-file-pen"></i>
-            <span>Crear OAT</span>
-        </button>
-        <button class="sidebar-link" data-vista="matriz" id="sidebarMatriz">
-            <i class="fa-solid fa-table-list"></i>
-            <span>Matriz de Cumplimiento</span>
-        </button>
-    </nav>
-    
-    <div class="sidebar-footer">
-        <footer class="sidebar-version">&copy; 2026, Cbop.David Espin</footer>
-        <span class="sidebar-version">v1.0</span>
-    </div>
-</aside>
+        <aside class="app-sidebar" id="appSidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <img src="imagen/SELLO GOMAI.jpg" alt="sello Gomai">
+                    <span class="logo-text">GOMAI</span>
+                    <span class="sidebar-subtitle">Sistema de Operaciones</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="sidebar-link active" data-vista="dashboard">
+                    <i class="fa-solid fa-house"></i>
+                    <span>Inicio</span>
+                </button>
+                <button class="sidebar-link" data-vista="crear-orden" id="sidebarCrearOrden">
+                    <i class="fa-solid fa-file-pen"></i>
+                    <span>Crear OAT</span>
+                </button>
+                <button class="sidebar-link" data-vista="matriz" id="sidebarMatriz">
+                    <i class="fa-solid fa-table-list"></i>
+                    <span>Matriz de Cumplimiento</span>
+                </button>
+                <button class="sidebar-link" data-vista="parte" id="sidebarParte">
+                    <i class="fa-solid fa-message"></i>
+                    <span>Parte al Instante</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <footer class="sidebar-version">&copy; 2026, Cbop.David Espin</footer>
+                <span class="sidebar-version">v1.0</span>
+            </div>
+        </aside>
 
         <!-- ==============================================
              ÁREA DE CONTENIDO PRINCIPAL
@@ -85,6 +93,8 @@
 
             <!-- ===== CONTENEDOR DE VISTAS ===== -->
             <div class="app-vistas">
+
+
 
                 <!-- ==============================================
                      VISTA: DASHBOARD PRINCIPAL
@@ -196,11 +206,8 @@
                             <label for="autoridadSeguridad">
                                 <i class="fa-solid fa-user-shield"></i> AUTORIDAD/GRUPO ASIGNADA LA SEGURIDAD:
                             </label>
-                            <input type="text" 
-                                   id="autoridadSeguridad" 
-                                   name="autoridadSeguridad"
-                                   placeholder="Ej: Capitán Pérez / Grupo de Seguridad Alpha"
-                                   class="autoridad-input">
+                            <input type="text" id="autoridadSeguridad" name="autoridadSeguridad"
+                                placeholder="Ej: Capitán Pérez / Grupo de Seguridad Alpha" class="autoridad-input">
                             <span id="autoridadInfo" class="autoridad-info">
                                 <i class="fa-regular fa-circle-info"></i> Ingrese la autoridad o grupo asignado
                             </span>
@@ -258,7 +265,9 @@
                                 <thead>
                                     <tr>
                                         <th style="width:40px; text-align:center;">
-                                            <input type="checkbox" id="chkSeleccionarTodas" style="width:16px; height:16px; cursor:pointer;" title="Seleccionar/Deseleccionar todas">
+                                            <input type="checkbox" id="chkSeleccionarTodas"
+                                                style="width:16px; height:16px; cursor:pointer;"
+                                                title="Seleccionar/Deseleccionar todas">
                                         </th>
                                         <th>Ord.</th>
                                         <th>Hora Inicio</th>
@@ -354,7 +363,9 @@
 
                         <div>
                             <h3>RESUMEN DE OPERACIONES POR CANTÓN</h3>
-                            <div id="matrizTablaResumen" class="matriz-tabla-contenedor" style="background: var(--dash-surface); border: 1px solid var(--dash-line); border-radius: var(--dash-radius); padding: 20px 22px;"></div>
+                            <div id="matrizTablaResumen" class="matriz-tabla-contenedor"
+                                style="background: var(--dash-surface); border: 1px solid var(--dash-line); border-radius: var(--dash-radius); padding: 20px 22px;">
+                            </div>
                         </div>
 
                         <div>
@@ -364,6 +375,94 @@
                             <div id="matrizDetallePaginacion" class="matriz-detalle-paginacion"></div>
                         </div>
                     </section>
+                </div>
+                <!-- ==============================================
+     VISTA: PARTE AL INSTANTE
+     ============================================== -->
+                <div id="vistaParte" class="vista-panel parte-container">
+                        <!-- ===== SELECTOR DE COMANDANTE (igual que en OAT) ===== -->
+    <section class="selector-container" id="selectorContainerParte">
+        <div class="selector-group">
+            <label for="comandanteSelectParte">Comandante:</label>
+            <select id="comandanteSelectParte">
+                <option value="">-- Seleccionar --</option>
+            </select>
+            <select id="funcionComandanteSelectParte">  
+                <option value="">-- Función --</option>
+            </select>
+        </div>
+    </section>
+                    <div class="parte-datos-mensaje">
+                        <h2 style="margin-bottom: 10px; color: #1a237e;">📨 Parte al Instante</h2>
+                        <p style="color: #666; margin-bottom: 12px; font-size: 13px;">
+                            Ingresa el texto con el formato <strong>*CAMPO:* valor</strong> para extraer automáticamente
+                            la información.
+                        </p>
+                        <textarea id="textoWhatsapp" class="parte-textarea-mensaje"
+                            placeholder="*PERMISO MI CORONEL, BUENOS DIAS, ME PERMITO DAR PARTE..."></textarea>
+                    </div>
+
+                    <div class="parte-datos-centrado">
+                        <button type="button" id="btn-generarwhatsapp">
+                            <span>📱 GENERAR MSJ WHATSAPP</span>
+                        </button>
+                        <button type="button" id="btn-generarFormatoCmdte">
+                            <span>📋 FORMATO CMDTE PATRULLA</span>
+                        </button>
+                        <button type="button" id="btn-generarMSM">
+                            <span>📄 GENERAR MENSAJE MILITAR</span>
+                        </button>
+                    </div>
+
+                    <!-- ===== MODAL PARTE ===== -->
+                    <div id="modal-parte" class="parte-modal modal" style="display: none;">
+                        <div class="parte-modal-contenido modal-contenido">
+                            <span class="parte-modal-cerrar cerrar-modal">&times;</span>
+                            <h2 style="color: #1a237e;">PARTE AL INSTANTE GENERADO</h2>
+                            <div id="cuerpo-modal" class="parte-cuerpo-modal"></div>
+                        </div>
+                    </div>
+
+                    <!-- ===== MODAL CMDTE ===== -->
+                    <div id="modal-cmdte" class="parte-modal modal" style="display: none;">
+                        <div class="parte-modal-contenido modal-contenido">
+                            <span class="parte-modal-cerrar cerrar-modal cerrar-modal-cmdte">&times;</span>
+                            <h2 style="color: #1a237e;">FORMATO COMANDANTE PATRULLA</h2>
+                            <div id="cuerpo-modal-cmdte" class="parte-cuerpo-modal">
+                                <p>*PERMISO MI CORONEL, BUENOS DIAS, ME PERMITO DAR PARTE DE LOS RESULTADOS DURANTE EL
+                                    CUMPLIMIENTO DE LAS OMAI EN EL CANTÓN MONTECRISTI*</p>
+                                <p>*COMANDANTE*<br />SUBT. PALADINES RHINO</p>
+                                <p>*NRO. OAT:* <br />FTCM-GTAGUILA-2026-7384-S</p>
+                                <p>*QUIÉN:* <br />EL GT "AGUILA" (GOMAI)</p>
+                                <p>*QUÉ/CÓMO:* <br />EL GT "AGUILA" (GOMAI), DANDO CUMPLIMIENTO A LAS OPERACIONES
+                                    MILITARES DE ÁMBITO INTERNO, MEDIANTE INFORMACIÓN DE INTELIGENCIA MILITAR, SE
+                                    EJECUTÓ EL ALLANAMIENTO DE UN INMUEBLE, DONDE SE OBTUVO EL SIGUIENTE RESULTADO:</p>
+                                <p>-360 GRAMOS DE SCSF (APROXIMADAMENTE)</p>
+                                <p>*CUANDO:*<br />LUNES 03-AGO-2026, DESDE LAS 2200 HASTA LAS 04:00</p>
+                                <p>*DÓNDE:* <br />PROVINCIA DE MANABÍ, CANTÓN MONTECRISTI SECTOR CIELITO LINDO
+                                    COORDENADAS: 1°00'08.2"S 80°42'37.1"W</p>
+                                <p>*ACCIONES TOMADAS:*<br />LAS EVIDENCIAS ENCONTRADAS FUERON ENTREGADAS A ÓRDENES DE
+                                    LAS AUTORIDADES COMPETENTES; TOMANDO COMO PROCEDIMIENTO EL SEÑOR SGOP. WILSON OLIVO
+                                    CHARIGUAMAN QUINTERO CON C.I 1803082302 PARA LOS TRÁMITES DE LEY CORRESPONDIENTES.
+                                </p>
+                                <p>*GDOS/GAO AFECTADO*<br />NINGUNO</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== MODAL MILITAR ===== -->
+                    <div id="modalMilitar" class="parte-modal modal" style="display: none;">
+                        <div class="parte-modal-contenido modal-contenido">
+                            <span class="parte-modal-cerrar close-btn">&times;</span>
+                            <h3 style="color: #1a237e;">MENSAJE MILITAR GENERADO</h3>
+                            <div id="cuerpo-modal-militar" class="parte-cuerpo-modal"></div>
+                            <div class="parte-btn-google-docs">
+                                <button type="button" id="btn-enviarGoogleDocs">
+                                    <span>📤 ENVIAR A GOOGLE DOCS</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -398,8 +497,10 @@
         </div>
     </div>
 
+
     <!-- ===== JS MODULAR ===== -->
     <script type="module" src="js/app.js"></script>
     <script type="module" src="js/controllers/dashboard-view.js"></script>
 </body>
+
 </html>
