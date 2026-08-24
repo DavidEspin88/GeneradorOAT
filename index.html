@@ -257,6 +257,41 @@
                         </div>
                     </section>
 
+                    <!-- ===== FILTROS DE BÚSQUEDA ===== -->
+<section class="filtros-container" id="filtrosContainer">
+    <div class="filtros-header">
+        <h3><i class="fa-solid fa-filter"></i> Filtros de Búsqueda</h3>
+        <button type="button" id="btnLimpiarFiltros" class="btn-limpiar-filtros">
+            <i class="fa-solid fa-eraser"></i> Limpiar filtros
+        </button>
+    </div>
+    <div class="filtros-grid">
+        <div class="filtro-grupo">
+            <label for="filtroTipoOperacion"><i class="fa-solid fa-tag"></i> Tipo Operación</label>
+            <input type="text" id="filtroTipoOperacion" placeholder="Ej: RASTRILLAJE, REGISTRO..." class="filtro-input">
+        </div>
+        <div class="filtro-grupo">
+            <label for="filtroNumeroAccion"><i class="fa-solid fa-hashtag"></i> N° Acción Táctica</label>
+            <input type="text" id="filtroNumeroAccion" placeholder="Ej: 7299, 7300..." class="filtro-input">
+        </div>
+        <div class="filtro-grupo">
+            <label for="filtroCanton"><i class="fa-solid fa-map-pin"></i> Cantón</label>
+            <input type="text" id="filtroCanton" placeholder="Ej: MANTA, PORTOVIEJO..." class="filtro-input">
+        </div>
+        <div class="filtro-grupo">
+            <label for="filtroParroquia"><i class="fa-solid fa-location-dot"></i> Parroquia</label>
+            <input type="text" id="filtroParroquia" placeholder="Ej: MANTA, EL RODEO..." class="filtro-input">
+        </div>
+        <div class="filtro-grupo">
+            <label for="filtroSector"><i class="fa-solid fa-road"></i> Sector</label>
+            <input type="text" id="filtroSector" placeholder="Ej: CIUDADELA, VÍA..." class="filtro-input">
+        </div>
+    </div>
+    <div class="filtros-contador">
+        <span id="filtroResultados">Mostrando <strong>0</strong> OATs</span>
+    </div>
+</section>
+
                     <!-- TABLA DE DATOS -->
                     <section id="contenedorTabla" class="table-container">
                         <h3>📊 Total de registros: <span id="contadorRegistros">0</span></h3>

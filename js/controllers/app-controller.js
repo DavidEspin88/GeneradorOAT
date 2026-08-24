@@ -124,33 +124,31 @@ export class AppController {
 
 
 configurarEventosTabla() {
-        this.tableController.setOnFilaSeleccionada((grupo, key, numAccion) => {
-            console.log('📋 Callback onFilaSeleccionada ejecutado');
-            if (grupo && grupo.operaciones) {
-                this.detailModalController.mostrar(
-                    grupo.operaciones,
-                    numAccion,
-                    grupo.operaciones.length
-                );
-            } else {
-                alert('No hay registros para mostrar en detalle');
-            }
-        });
+    this.tableController.setOnFilaSeleccionada((grupo, key, numAccion) => {
+        console.log('📋 Callback onFilaSeleccionada ejecutado');
+        if (grupo && grupo.operaciones) {
+            this.detailModalController.mostrar(
+                grupo.operaciones,
+                numAccion,
+                grupo.operaciones.length
+            );
+        } else {
+            alert('No hay registros para mostrar en detalle');
+        }
+    });
 
-        // ✅ El botón 👁 ahora SOLO muestra la vista previa en el modal.
-        // Ya no envía nada a Apps Script (eso lo hace btnGenerar o el
-        // flujo de generación por selección con checkboxes).
-        this.tableController.setOnVerOrden((grupo, numAccion) => {
-            console.log('👁 Vista previa de Orden de Operaciones:', numAccion);
-            this.mostrarVistaPrevia(grupo);
-        });
+    this.tableController.setOnVerOrden((grupo, numAccion) => {
+        console.log('👁 Vista previa de Orden de Operaciones:', numAccion);
+        this.mostrarVistaPrevia(grupo);
+    });
 
-        // ✅ Cada vez que cambia la cantidad de filas marcadas con checkbox,
-        // habilita/deshabilita el botón "Generar Documento desde selección".
-        this.tableController.setOnSeleccionCambiada((cantidad) => {
-            this.actualizarBotonGenerarSeleccion(cantidad > 0);
-        });
-    }
+    this.tableController.setOnSeleccionCambiada((cantidad) => {
+        this.actualizarBotonGenerarSeleccion(cantidad > 0);
+    });
+
+    // ✅ CONFIGURAR FILTROS (asegurar que se llama)
+    this._configurarFiltros();
+}
 
     /**
      * ✅ Carga los selectores de oficiales
@@ -348,7 +346,58 @@ cargarSelectores() {
             this.elements.btnGenerarSeleccion.style.opacity = habilitado ? '1' : '0.5';
         }
     }
+/**
+ * ✅ Configura los eventos de filtros
+ */
+_configurarFiltros() {
+    console.log('🔍 Configurando filtros...');
 
+    const filtros = [
+        { id: 'filtroTipoOperacion', campo: 'tipoOperacion' },
+        { id: 'filtroNumeroAccion', campo: 'numeroAccion' },
+        { id: 'filtroCanton', campo: 'canton' },
+        { id: 'filtroParroquia', campo: 'parroquia' },
+        { id: 'filtroSector', campo: 'sector' }
+    ];
+
+    // ✅ Conectar cada input con su evento
+    filtros.forEach(({ id, campo }) => {
+        const input = document.getElementById(id);
+        if (input) {
+            console.log(`✅ Filtro conectado: ${id}`);
+            input.addEventListener('input', (e) => {
+                const valor = e.target.value;
+                console.log(`🔍 Filtrando por ${campo}: "${valor}"`);
+                if (this.tableController) {
+                    this.tableController.setFiltros({ [campo]: valor });
+                } else {
+                    console.warn('⚠️ tableController no disponible');
+                }
+            });
+        } else {
+            console.warn(`⚠️ Elemento no encontrado: ${id}`);
+        }
+    });
+
+    // ✅ Botón limpiar filtros
+    const btnLimpiar = document.getElementById('btnLimpiarFiltros');
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', () => {
+            console.log('🧹 Limpiando filtros...');
+            filtros.forEach(({ id }) => {
+                const input = document.getElementById(id);
+                if (input) {
+                    input.value = '';
+                }
+            });
+            if (this.tableController) {
+                this.tableController.limpiarFiltros();
+            }
+        });
+    } else {
+        console.warn('⚠️ Botón "Limpiar filtros" no encontrado');
+    }
+}
     /**
      * Actualiza el estado del botón generar
      */

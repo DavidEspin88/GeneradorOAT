@@ -251,6 +251,11 @@ export class DocumentGenerator {
       console.log("📋 Generando documento tipo APOYO MIN. AMBIENTE ENERGÍA");
       return this._generarDocumentoApoyoMinAmbienteEnergia();
     }
+     // ✅ NUEVO: OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS
+    if (tipoNormalizado === "OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS") {
+        console.log("📋 Generando documento tipo OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS");
+        return this._generarDocumentoSostenibles();
+    }
 
     // ✅ Si es PMI, usar el formato específico
     if (tipoNormalizado === "PMI") {
@@ -3452,6 +3457,251 @@ const misionTexto = `El PMP del ${unidad}, brindará seguridad en apoyo al MDN (
 
     return bloques;
   }
+
+  // ==============================================
+// GENERADOR DE DOCUMENTOS - OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS
+// ==============================================
+
+_generarDocumentoSostenibles() {
+    console.log("🛑 GENERANDO OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS");
+
+    const bloques = [];
+
+    // --- UNIDAD ---
+    const unidad = this.unidadResponsable || this.datos?.unidad || "GT ÁGUILA (GOMAI)";
+
+    // --- DATOS ---
+    const canton = this.datos?.canton || "Cantón no especificado";
+    const numeroOrden = this.numeroAccion || "7299";
+    const fechaBase = this.fechaDocumento || new Date();
+
+    // ✅ Obtener sectores (para otros cantones)
+    const sectores = this.operacionesAgrupadas
+        .map(op => op.sector || "Sector no especificado")
+        .filter(s => s && s !== "Sector no especificado");
+    const sectoresUnicos = [...new Set(sectores)];
+    let sectorTexto = "Sector no especificado";
+    if (sectoresUnicos.length === 1) {
+        sectorTexto = sectoresUnicos[0];
+    } else if (sectoresUnicos.length > 1) {
+        sectorTexto = sectoresUnicos.join(" / ");
+    }
+
+    // ✅ Calcular fechas con la misma lógica de RASTRILLAJE
+    const rango = calcularRangoOperacion(this.operacionesAgrupadas, fechaBase);
+    const horaInicioMilitar = rango.horaInicio.replace(":", "");
+    const horaFinalMilitar = rango.horaFinal.replace(":", "");
+    const fechaInicioStr = generarFechaDocumento(rango.fechaInicio, horaInicioMilitar);
+    const fechaFinStr = generarFechaDocumento(rango.fechaFinal, horaFinalMilitar);
+    const fechaEncabezado = generarFechaHoraEncabezado();
+    const siglas = obtenerSiglas(this.comandante?.nombre || "Johnny Minchala Redrován");
+
+    // --- ASUNTO ---
+    const asunto = "Operaciones Sostenibles en Áreas Criticas";
+
+    // ==============================================
+    // 1. ENCABEZADO
+    // ==============================================
+    bloques.push(`
+        <div class="bloque-encabezado">
+            <div class="linea-encabezado">GT ÁGUILA (GOMAI)</div>
+            <div class="linea-encabezado">MANTA (PROV. MANABÍ)</div>
+            <div class="linea-encabezado">${fechaEncabezado}</div>
+            <div class="linea-encabezado">${siglas}-${numeroOrden}</div>
+        </div>
+    `);
+    bloques.push('<div class="vacio"></div>');
+
+    // ==============================================
+    // 2. TÍTULO
+    // ==============================================
+    const numeroOrdenCompleto = formatearNumeroOrden(numeroOrden);
+    bloques.push(
+        `<div class="titulo-documento">ORDEN DE ACCIÓN TÁCTICA Nro. ${numeroOrdenCompleto}</div>`
+    );
+    bloques.push('<div class="vacio"></div>');
+
+    // ==============================================
+    // 3. ASUNTO
+    // ==============================================
+    bloques.push(
+        `<p class="parrafo-asunto"><span class="asunto-label">&nbsp;&nbsp;Asunto:</span>&nbsp;&nbsp;\t${asunto}</p>`
+    );
+    bloques.push('<div class="vacio"></div>');
+
+    // ==============================================
+    // 4. DOCUMENTOS (Marco legal)
+    // ==============================================
+    bloques.push(...this._generarBloqueDocumentos());
+
+    // ==============================================
+    // 5. I. SITUACIÓN
+    // ==============================================
+    bloques.push(
+        '<div class="titulo-romano"><span class="marcador">I.</span>SITUACIÓN</div>'
+    );
+    bloques.push('<div class="vacio"></div>');
+    bloques.push(`
+        <p class="texto-situacion">El cantón ${canton} enfrenta actualmente una situación de seguridad preocupante, caracterizada por el incremento de hechos violentos, asociados principalmente a su ubicación estratégica en una zona costera de Manabí. Esta condición ha sido aprovechada por organizaciones delictivas vinculadas al narcotráfico y otras economías ilícitas, que utilizan el territorio como punto de tránsito, acopio y salida marítima de sustancias catalogadas sujetas a fiscalización, generando disputas por el control de rutas y zonas de influencia.</p>
+    `);
+    bloques.push(`
+        <p class="texto-situacion-2">La violencia se ve agravada por múltiples factores, entre ellos la disputa por el control territorial y las fracturas en la línea de mando del GAO "Los Choneros", que han intensificado los enfrentamientos internos. Estas dinámicas se complementan con condiciones socioeconómicas adversas, que incrementan la vulnerabilidad social y favorecen la captación de jóvenes por parte de las organizaciones criminales, fortaleciendo sus redes e incrementando los niveles de violencia en el territorio.</p>
+    `);
+    bloques.push('<div class="vacio"></div>');
+
+    // ==============================================
+    // 6. II. MISIÓN
+    // ==============================================
+    bloques.push(
+        '<div class="titulo-romano"><span class="marcador">II.</span>MISIÓN</div>'
+    );
+    bloques.push('<div class="vacio"></div>');
+
+    // ✅ CONDICIÓN: MANTA vs OTRO CANTÓN
+    const esManta = canton.toUpperCase().trim() === "MANTA";
+
+    let misionTexto = "";
+    if (esManta) {
+        // ✅ MANTA: misión sin sector, CON tabla
+        misionTexto =
+            `El PMP del ${unidad}, ejecutará Operaciones Sostenibles en Áreas Criticas, en el canton ${canton}, el día ${fechaInicioStr} hasta ${fechaFinStr}, para neutralizar los ataques armados, amenazas o riesgos, orquestados por el crimen organizado, grupos armados organizados o terroristas o actores no estatales del conflicto armado interno, respetando el DIH y los DDHH y estricta observancia a la ley orgánica que regula el uso legítimo de la fuerza.`;
+    } else {
+        // ✅ OTRO CANTÓN: misión CON sector, SIN tabla
+        misionTexto =
+            `El PMP del ${unidad}, ejecutará Operaciones Sostenibles en Áreas Criticas, en el canton ${canton}, sector ${sectorTexto}, el día ${fechaInicioStr} hasta ${fechaFinStr}, para neutralizar los ataques armados, amenazas o riesgos, orquestados por el crimen organizado, grupos armados organizados o terroristas o actores no estatales del conflicto armado interno, respetando el DIH y los DDHH y estricta observancia a la ley orgánica que regula el uso legítimo de la fuerza.`;
+    }
+
+    bloques.push(`<p class="texto-mision">${misionTexto}</p>`);
+    bloques.push('<div class="vacio"></div>');
+
+    // ==============================================
+    // 7. III. EJECUCIÓN
+    // ==============================================
+    bloques.push(
+        '<div class="titulo-romano"><span class="marcador">III.</span>EJECUCIÓN</div>'
+    );
+    bloques.push('<div class="vacio"></div>');
+
+    // --- A. CONCEPTO DE LA OPERACIÓN ---
+    bloques.push(
+        '<div class="titulo-letra"><span class="marcador">A.</span>CONCEPTO DE LA OPERACIÓN</div>'
+    );
+
+    const conceptoTexto =
+        `El personal del ${unidad}, ejecutará operaciones de allanamientos y rastrillaje en los sectores de mayor incidencia delincuencial, a fin de contrarrestar el accionar de organizaciones terroristas y actores no estatales no beligerantes, con el objetivo de reducir los índices de criminalidad y violencia que inciden en la seguridad ciudadana, respetando los Derechos humanos y en estricta observancia a la ley orgánica que regula el uso legítimo de la fuerza.`;
+
+    bloques.push(`<p class="texto-concepto">${conceptoTexto}</p>`);
+    bloques.push(`
+        <p class="texto-concepto">Mantenerse en alerta permanente ante algún evento y/o intento de acto hostil EN FLAGRANCIA donde se requiera la intervención rápida y oportuna del personal militar profesional CON ORDEN, de competencia legal de fuerzas armadas.</p>
+    `);
+    bloques.push(`
+        <p class="texto-concepto">Los ECOS se mantendrán en alerta permanente para ser activados con orden como FFRR en apoyo a las unidades desplegadas.</p>
+    `);
+    bloques.push('<div class="vacio"></div>');
+
+    // ==============================================
+    // 8. TABLA DE EJECUCIÓN (SOLO PARA MANTA)
+    // ==============================================
+    if (esManta) {
+        // Filtrar solo operaciones de tipo OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS
+        const operacionesFiltradas = filtrarPorTipoOperacion(
+            this.operacionesAgrupadas,
+            "OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS"
+        );
+
+        let filasTabla = "";
+        if (operacionesFiltradas.length > 0) {
+            operacionesFiltradas.forEach((op) => {
+                const canton = op.canton || "N/A";
+                const parroquia = op.parroquia || "N/A";
+                const sector = op.sector || "N/A";
+                const tipoOp = "OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS";
+
+                let hi = String(op.horaInicio || "00:00").trim();
+                let hf = String(op.horaFinal || "00:00").trim();
+
+                if (!hi.includes(":")) {
+                    hi = convertirHoraMilitar(hi) || "00:00";
+                }
+                if (!hf.includes(":")) {
+                    hf = convertirHoraMilitar(hf) || "00:00";
+                }
+                if (!hi.includes(":")) hi = "00:00";
+                if (!hf.includes(":")) hf = "00:00";
+
+                const horario = `${hi} - ${hf}`;
+
+                filasTabla += `
+                    <tr>
+                        <td>${sanitizarTexto(canton)}</td>
+                        <td>${sanitizarTexto(parroquia)}</td>
+                        <td>${sanitizarTexto(sector)}</td>
+                        <td>${horario}</td>
+                        <td>${tipoOp}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // ✅ Generar tabla SOLO si hay registros
+        if (filasTabla) {
+            bloques.push(`
+                <table class="tabla-operaciones tabla-sostenibles">
+                    <thead>
+                        <tr>
+                            <th>CANTÓN</th>
+                            <th>PARROQUIA</th>
+                            <th>SECTOR</th>
+                            <th>HORARIO</th>
+                            <th>TIPO DE OPERACIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${filasTabla}
+                    </tbody>
+                </table>
+            `);
+            bloques.push('<div class="vacio"></div>');
+        }
+    }
+
+    // ==============================================
+    // 9. B. TAREAS GENERALES (REUTILIZADO)
+    // ==============================================
+    bloques.push(...this._generarTareasGenerales(false));
+
+    // ==============================================
+    // 10. C. TAREAS ESPECÍFICAS (REUTILIZADO)
+    // ==============================================
+    bloques.push(...this._generarTareasEspecificas());
+
+    // ==============================================
+    // 11. D. INSTRUCCIONES DE COORDINACIÓN (REUTILIZADO)
+    // ==============================================
+    bloques.push(...this._generarInstruccionesCoordinacion());
+
+    // ==============================================
+    // 12. IV. ADMINISTRATIVAS Y LOGISTICA (REUTILIZADO)
+    // ==============================================
+    bloques.push(...this._generarAdministrativasLogistica());
+
+    // ==============================================
+    // 13. V. ENLACE, MEDIOS Y MANDO (REUTILIZADO)
+    // ==============================================
+    bloques.push(...this._generarEnlaceMediosMando());
+
+    // ==============================================
+    // 14. FIRMAS (REUTILIZADO)
+    // ==============================================
+    bloques.push(...this._generarFirmas());
+
+    // ==============================================
+    // 15. ANEXOS (REUTILIZADO)
+    // ==============================================
+    bloques.push(...this._generarAnexos());
+
+    return bloques;
+}
 
   // ==============================================
   // GENERADOR DE DOCUMENTOS - PARTE RETEN MILITAR
