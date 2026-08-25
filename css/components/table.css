@@ -455,10 +455,10 @@
 }
 
 .tabla-sostenibles th:nth-child(1) { width: 15%; }
-.tabla-sostenibles th:nth-child(2) { width: 20%; }
-.tabla-sostenibles th:nth-child(3) { width: 30%; }
-.tabla-sostenibles th:nth-child(4) { width: 20%; }
-.tabla-sostenibles th:nth-child(5) { width: 15%; }
+.tabla-sostenibles th:nth-child(2) { width: 15%; }
+.tabla-sostenibles th:nth-child(3) { width: 15%; }
+.tabla-sostenibles th:nth-child(4) { width: 15%; }
+.tabla-sostenibles th:nth-child(5) { width: 40%; }
 
 /* ==============================================
    FILTROS DE BÚSQUEDA
