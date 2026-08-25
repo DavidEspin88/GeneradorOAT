@@ -132,3 +132,45 @@ export function limpiarSector(sector) {
     
     return texto || 'Sector no especificado';
 }
+
+// ==============================================
+// FORMATO DE NOMBRES DE CANTONES
+// ==============================================
+
+/**
+ * Convierte un nombre de cantón en MAYÚSCULAS a formato tipo oración
+ * Ejemplos:
+ *   "MANTA" → "Manta"
+ *   "MONTECRISTI" → "Montecristi"
+ *   "PUERTO LÓPEZ" → "Puerto López"
+ *   "SAN VICENTE" → "San Vicente"
+ * 
+ * @param {string} canton - Nombre del cantón en MAYÚSCULAS
+ * @returns {string} - Nombre formateado en tipo oración
+ */
+export function formatearNombreCanton(canton) {
+    if (!canton || typeof canton !== 'string') return canton || '';
+    
+    // Si ya está en formato oración, devolverlo tal cual
+    // (para evitar convertir "Manta" en "Manta" innecesariamente)
+    const primeraLetra = canton.charAt(0);
+    const resto = canton.slice(1);
+    if (primeraLetra === primeraLetra.toUpperCase() && 
+        resto === resto.toLowerCase()) {
+        return canton;
+    }
+    
+    // Convertir a minúsculas y luego capitalizar cada palabra
+    const palabras = canton.toLowerCase().split(' ');
+    const palabrasFormateadas = palabras.map(palabra => {
+        // Palabras especiales que deben conservar mayúscula interna
+        const excepciones = ['lópez', 'vicente', 'jipijapa'];
+        if (excepciones.includes(palabra.toLowerCase())) {
+            // Para palabras con tilde, capitalizar manteniendo la tilde
+            return palabra.charAt(0).toUpperCase() + palabra.slice(1);
+        }
+        return palabra.charAt(0).toUpperCase() + palabra.slice(1);
+    });
+    
+    return palabrasFormateadas.join(' ');
+}

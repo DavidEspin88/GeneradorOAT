@@ -9,6 +9,7 @@ import {
   calcularRangoOperacion,
   cruzaMedianoche,
   calcularFechasMision,
+  
 } from "../utils/date-utils.js";
 
 import {
@@ -17,6 +18,7 @@ import {
   sanitizarTexto,
   convertirHoraMilitar,
   limpiarSector,
+  formatearNombreCanton,
 } from "../utils/string-utils.js";
 
 import { getGradoByNombre, getFuncionById } from "../models/oficial.js";
@@ -180,99 +182,98 @@ export class DocumentGenerator {
   /**
    * Genera el documento completo según el tipo de operación
    */
-  generarDocumentoCompleto() {
+generarDocumentoCompleto() {
     // Detectar el tipo de operación
     const tipoOperacion = String(this.datos?.tipoOperacion || "")
-      .toUpperCase()
-      .trim();
+        .toUpperCase()
+        .trim();
 
-    console.log(
-      "📋 Tipo de operación detectado (raw):",
-      this.datos?.tipoOperacion,
-    );
+    console.log("📋 Tipo de operación detectado (raw):", this.datos?.tipoOperacion);
     console.log("📋 Tipo de operación procesado:", tipoOperacion);
 
     // Normalizar el tipo para comparación
     const tipoNormalizado = tipoOperacion.replace(/\s+/g, " ").trim();
+    console.log("📋 tipoNormalizado:", tipoNormalizado);
+
+    // ==========================================================
+    // ✅ NUEVO: OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS
+    // DEBE IR AL PRINCIPIO, ANTES QUE CUALQUIER OTRA CONDICIÓN
+    // ==========================================================
+    // ✅ Usar includes para detectar tanto "AREAS" como "ÁREAS"
+    if (tipoNormalizado.includes("OPERACIONES SOSTENIBLES") || 
+        tipoNormalizado.includes("OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS") ||
+        tipoNormalizado === "OPERACIONES SOSTENIBLES EN AREAS CRITICAS") {
+        console.log("📋 ✅ GENERANDO OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS");
+        return this._generarDocumentoSostenibles();
+    }
 
     // Si es REGISTRO, usar el formato específico
     if (tipoNormalizado === "REGISTRO") {
-      console.log("📋 Generando documento tipo REGISTRO");
-      return this._generarDocumentoRegistro();
+        console.log("📋 Generando documento tipo REGISTRO");
+        return this._generarDocumentoRegistro();
     }
 
     // Si es APOYO MINEDUC, usar el formato específico
     if (tipoNormalizado === "APOYO MINEDUC") {
-      console.log("📋 Generando documento tipo APOYO MINEDUC");
-      return this._generarDocumentoApoyoMINEDUC();
+        console.log("📋 Generando documento tipo APOYO MINEDUC");
+        return this._generarDocumentoApoyoMINEDUC();
     }
 
     // Si es RASTRILLAJE, usar el formato específico
     if (tipoNormalizado === "RASTRILLAJE") {
-      console.log("📋 Generando documento tipo RASTRILLAJE");
-      return this._generarDocumentoRastrillaje();
+        console.log("📋 Generando documento tipo RASTRILLAJE");
+        return this._generarDocumentoRastrillaje();
     }
 
     // Si es CAMEX EJES VIALES, usar el formato específico
     if (tipoNormalizado === "CAMEX EJES VIALES") {
-      console.log("📋 Generando documento tipo CAMEX EJES VIALES");
-      return this._generarDocumentoCAMEXEjesViales();
+        console.log("📋 Generando documento tipo CAMEX EJES VIALES");
+        return this._generarDocumentoCAMEXEjesViales();
     }
 
     // Si es RETEN MILITAR, usar el formato específico
-    if (
-      tipoNormalizado.includes("RETEN MILITAR") ||
-      tipoNormalizado.includes("CONTROL TANQUEROS")
-    ) {
-      console.log("📋 Generando documento tipo RETÉN MILITAR");
-      return this._generarDocumentoRetenMilitar();
+    if (tipoNormalizado.includes("RETEN MILITAR") || 
+        tipoNormalizado.includes("CONTROL TANQUEROS")) {
+        console.log("📋 Generando documento tipo RETÉN MILITAR");
+        return this._generarDocumentoRetenMilitar();
     }
 
     // Si es CAMEX COORD. P.N., usar el formato específico
     if (tipoNormalizado.includes("CAMEX COORD")) {
-      console.log("📋 Generando documento tipo CAMEX COORD. P.N.");
-      return this._generarDocumentoCAMEXCoordPN();
+        console.log("📋 Generando documento tipo CAMEX COORD. P.N.");
+        return this._generarDocumentoCAMEXCoordPN();
     }
 
     // Si es SEGURIDAD ARS, usar el formato específico
-    if (
-      tipoNormalizado.includes("SEGURIDAD ARS") ||
-      tipoNormalizado.includes("REPETIDORAS CCFFAA")
-    ) {
-      console.log("📋 Generando documento tipo SEGURIDAD ARS");
-      return this._generarDocumentoSeguridadARS();
+    if (tipoNormalizado.includes("SEGURIDAD ARS") || 
+        tipoNormalizado.includes("REPETIDORAS CCFFAA")) {
+        console.log("📋 Generando documento tipo SEGURIDAD ARS");
+        return this._generarDocumentoSeguridadARS();
     }
 
     // Si es APOYO MIN. AMBIENTE ENERGÍA, usar el formato específico
-    if (
-      tipoNormalizado.includes("APOYO MIN. AMBIENTE ENERGÍA") ||
-      tipoNormalizado.includes("CELEC")
-    ) {
-      console.log("📋 Generando documento tipo APOYO MIN. AMBIENTE ENERGÍA");
-      return this._generarDocumentoApoyoMinAmbienteEnergia();
-    }
-     // ✅ NUEVO: OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS
-    if (tipoNormalizado === "OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS") {
-        console.log("📋 Generando documento tipo OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS");
-        return this._generarDocumentoSostenibles();
+    if (tipoNormalizado.includes("APOYO MIN. AMBIENTE ENERGÍA") || 
+        tipoNormalizado.includes("CELEC")) {
+        console.log("📋 Generando documento tipo APOYO MIN. AMBIENTE ENERGÍA");
+        return this._generarDocumentoApoyoMinAmbienteEnergia();
     }
 
-    // ✅ Si es PMI, usar el formato específico
+    // Si es PMI, usar el formato específico
     if (tipoNormalizado === "PMI") {
-      console.log("📋 Generando documento tipo PMI");
-      return this._generarDocumentoPMI();
+        console.log("📋 Generando documento tipo PMI");
+        return this._generarDocumentoPMI();
     }
 
-    // ✅ Si es INTERVENCIÓN, usar el formato específico
+    // Si es INTERVENCIÓN, usar el formato específico
     if (tipoNormalizado === "INTERVENCIÓN" || tipoNormalizado === "INTERVENCION") {
-      console.log("📋 Generando documento tipo INTERVENCIÓN");
-      return this._generarDocumentoIntervencion();
+        console.log("📋 Generando documento tipo INTERVENCIÓN");
+        return this._generarDocumentoIntervencion();
     }
 
     // Si es APOYO SNAI u otro, usar el formato existente
     console.log("📋 Generando documento tipo APOYO SNAI (por defecto)");
     return this._generarDocumentoApoyoSNAI();
-  }
+}
   // ==============================================
   // MÉTODOS AUXILIARES REUTILIZABLES
   // ==============================================
@@ -1322,8 +1323,9 @@ export class DocumentGenerator {
       '<div class="titulo-romano"><span class="marcador">I.</span>SITUACIÓN</div>',
     );
     bloques.push('<div class="vacio"></div>');
+    const cantonTexto = formatearNombreCanton(canton)
     bloques.push(`
-        <p class="texto-situacion">El cantón ${canton} atraviesa actualmente una crítica situación de seguridad debido al elevado índice de violencia, producto principalmente de la presencia y disputa de organizaciones criminales vinculadas al narcotráfico y economías ilegales, que aprovechan su ubicación estratégica como puerto y punto logístico en la costa ecuatoriana.</p>
+        <p class="texto-situacion">El cantón ${cantonTexto} atraviesa actualmente una crítica situación de seguridad debido al elevado índice de violencia, producto principalmente de la presencia y disputa de organizaciones criminales vinculadas al narcotráfico y economías ilegales, que aprovechan su ubicación estratégica como puerto y punto logístico en la costa ecuatoriana.</p>
     `);
     bloques.push(`
         <p class="texto-situacion-2">La pugna por el control territorial, rutas de salida de droga, microtráfico, extorsión y otros delitos conexos ha generado un incremento sostenido de muertes violentas, ataques armados y hechos delictivos, afectando tanto a sectores periféricos como a zonas urbanas y comerciales. Esta realidad ha deteriorado la percepción de seguridad ciudadana, alterando la dinámica social y económica del cantón, en este contexto, la violencia no responde a hechos aislados, sino a un problema latente que combina crimen organizado, vulnerabilidad social y economías ilícitas.</p>
@@ -1342,7 +1344,7 @@ export class DocumentGenerator {
 const fechaInicioMision = fechasMision.fechaInicioStr;
 const fechaFinMision = fechasMision.fechaFinStr;
 
-const misionTexto = `El PMP del ${unidad}, ejecutará OMAI mediante patrullaje pedestre/rastrillaje, en el cantón ${canton}, el día ${fechaInicioMision} hasta ${fechaFinMision}, para neutralizar los ataques armados, amenazas o riesgos, orquestados por el crimen organizado, grupos armados organizados o terroristas o actores no estatales del conflicto armado interno, respetando el DIH y los DDHH y estricta observancia a la ley orgánica que regula el uso legítimo de la fuerza.`;
+const misionTexto = `El PMP del ${unidad}, ejecutará OMAI mediante patrullaje pedestre/rastrillaje, en el cantón ${cantonTexto}, el día ${fechaInicioMision} hasta ${fechaFinMision}, para neutralizar los ataques armados, amenazas o riesgos, orquestados por el crimen organizado, grupos armados organizados o terroristas o actores no estatales del conflicto armado interno, respetando el DIH y los DDHH y estricta observancia a la ley orgánica que regula el uso legítimo de la fuerza.`;
 
     bloques.push(`<p class="texto-mision">${misionTexto}</p>`);
     bloques.push('<div class="vacio"></div>');
@@ -1496,8 +1498,9 @@ const misionTexto = `El PMP del ${unidad}, ejecutará OMAI mediante patrullaje p
       '<div class="titulo-romano"><span class="marcador">I.</span>SITUACIÓN</div>',
     );
     bloques.push('<div class="vacio"></div>');
+    const cantonTexto = formatearNombreCanton(canton);
     bloques.push(`
-        <p class="texto-situacion">El cantón ${canton} atraviesa actualmente una crítica situación de seguridad debido al elevado índice de violencia, producto principalmente de la presencia y disputa de organizaciones criminales vinculadas al narcotráfico y economías ilegales, que aprovechan su ubicación estratégica como puerto y punto logístico en la costa ecuatoriana.</p>
+        <p class="texto-situacion">El cantón ${cantonTexto} atraviesa actualmente una crítica situación de seguridad debido al elevado índice de violencia, producto principalmente de la presencia y disputa de organizaciones criminales vinculadas al narcotráfico y economías ilegales, que aprovechan su ubicación estratégica como puerto y punto logístico en la costa ecuatoriana.</p>
     `);
     bloques.push(`
         <p class="texto-situacion-2">La pugna por el control territorial, rutas de salida de droga, microtráfico, extorsión y otros delitos conexos ha generado un incremento sostenido de muertes violentas, ataques armados y hechos delictivos, afectando tanto a sectores periféricos como a zonas urbanas y comerciales. Esta realidad ha deteriorado la percepción de seguridad ciudadana, alterando la dinámica social y económica del cantón, en este contexto, la violencia no responde a hechos aislados, sino a un problema latente que combina crimen organizado, vulnerabilidad social y economías ilícitas.</p>
@@ -1521,7 +1524,7 @@ const misionTexto = `El PMP del ${unidad}, ejecutará OMAI mediante patrullaje p
     const fechaInicioMision = fechasMision.fechaInicioStr;
     const fechaFinMision = fechasMision.fechaFinStr;
 
-    const misionTexto = `El PMP del ${unidad}, ejecutará operaciones de allanamientos el día ${fechaInicioMision} hasta ${fechaFinMision} en el cantón ${canton}, para realizar las intervenciones en coordinación con la Policía Nacional, orientadas a neutralizar el accionar de los GAO/GDOT, reducir sus capacidades logísticas y afectar las economías criminales.`;
+    const misionTexto = `El PMP del ${unidad}, ejecutará operaciones de allanamientos el día ${fechaInicioMision} hasta ${fechaFinMision} en el cantón ${cantonTexto}, para realizar las intervenciones en coordinación con la Policía Nacional, orientadas a neutralizar el accionar de los GAO/GDOT, reducir sus capacidades logísticas y afectar las economías criminales.`;
 
     bloques.push(`<p class="texto-mision">${misionTexto}</p>`);
     bloques.push('<div class="vacio"></div>');
@@ -1904,8 +1907,9 @@ const misionTexto = `El PMP del ${unidad}, ejecutará OMAI mediante patrullaje p
     const fechasMision = calcularFechasMision(this.operacionesAgrupadas, this.fechaDocumento);
 const fechaInicioMision = fechasMision.fechaInicioStr;
 const fechaFinMision = fechasMision.fechaFinStr;
+const cantonTexto = formatearNombreCanton(canton);
 
-const misionTexto = `El PMP del ${unidad}, ejecutará operaciones en apoyo a otras entidades del estado (Ministerio de educación), en el cantón ${canton}, el día ${fechaInicioMision} hasta ${fechaFinMision}, a fin de identificar, aislar, prevenir y neutralizar la amenaza, cometimientos de actos hostiles y alteración del orden público que amenacen las Instituciones Educativas.`;
+const misionTexto = `El PMP del ${unidad}, ejecutará operaciones en apoyo a otras entidades del estado (Ministerio de educación), en el cantón ${cantonTexto}, el día ${fechaInicioMision} hasta ${fechaFinMision}, a fin de identificar, aislar, prevenir y neutralizar la amenaza, cometimientos de actos hostiles y alteración del orden público que amenacen las Instituciones Educativas.`;
 
     bloques.push(`<p class="texto-mision">${misionTexto}</p>`);
     bloques.push('<div class="vacio"></div>');
@@ -2073,8 +2077,9 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones en apoyo a otr
       '<div class="titulo-romano"><span class="marcador">I.</span>SITUACIÓN</div>',
     );
     bloques.push('<div class="vacio"></div>');
+    const cantonTexto = formatearNombreCanton(canton);
     bloques.push(`
-        <p class="texto-situacion">El cantón ${canton} enfrenta actualmente una situación de seguridad preocupante, caracterizada por el incremento de hechos violentos, asociados principalmente a su ubicación estratégica en una zona costera de Manabí. Esta condición ha sido aprovechada por organizaciones delictivas vinculadas al narcotráfico y otras economías ilícitas, que utilizan el territorio como punto de tránsito, acopio y salida marítima de sustancias catalogadas sujetas a fiscalización, generando disputas por el control de rutas y zonas de influencia.</p>
+        <p class="texto-situacion">El cantón ${cantonTexto} enfrenta actualmente una situación de seguridad preocupante, caracterizada por el incremento de hechos violentos, asociados principalmente a su ubicación estratégica en una zona costera de Manabí. Esta condición ha sido aprovechada por organizaciones delictivas vinculadas al narcotráfico y otras economías ilícitas, que utilizan el territorio como punto de tránsito, acopio y salida marítima de sustancias catalogadas sujetas a fiscalización, generando disputas por el control de rutas y zonas de influencia.</p>
     `);
     bloques.push(`
         <p class="texto-situacion-2">La violencia se ve agravada por múltiples factores, entre ellos la disputa por el control territorial y las fracturas en la línea de mando del GAO "Los Choneros", que han intensificado los enfrentamientos internos. Estas dinámicas se complementan con condiciones socioeconómicas adversas, que incrementan la vulnerabilidad social y favorecen la captación de jóvenes por parte de las organizaciones criminales, fortaleciendo sus redes e incrementando los niveles de violencia en el territorio.</p>
@@ -2093,7 +2098,7 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones en apoyo a otr
 const fechaInicioMision = fechasMision.fechaInicioStr;
 const fechaFinMision = fechasMision.fechaFinStr;
 
-const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en los ejes viales, en el cantón ${canton}, el día ${fechaInicioMision} hasta ${fechaFinMision}, a fin de evitar el tráfico ilegal de armas, municiones explosivos, SCSF y neutralizar los ataques armados, amenazas o riesgos, orquestados por el crimen organizado, grupos armados organizados o terroristas o actores no estatales del conflicto armado interno, respetando el DIH y los DDHH, y estricta observancia a la ley orgánica que regula el uso legítimo de la fuerza.`;
+const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en los ejes viales, en el cantón ${cantonTexto}, el día ${fechaInicioMision} hasta ${fechaFinMision}, a fin de evitar el tráfico ilegal de armas, municiones explosivos, SCSF y neutralizar los ataques armados, amenazas o riesgos, orquestados por el crimen organizado, grupos armados organizados o terroristas o actores no estatales del conflicto armado interno, respetando el DIH y los DDHH, y estricta observancia a la ley orgánica que regula el uso legítimo de la fuerza.`;
     bloques.push(`<p class="texto-mision">${misionTexto}</p>`);
     bloques.push('<div class="vacio"></div>');
 
@@ -2392,8 +2397,9 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en los e
       '<div class="titulo-romano"><span class="marcador">I.</span>SITUACIÓN</div>',
     );
     bloques.push('<div class="vacio"></div>');
+    const cantonTexto = formatearNombreCanton(canton);
     bloques.push(`
-        <p class="texto-situacion">El cantón ${canton} atraviesa actualmente una crítica situación de seguridad debido al elevado índice de violencia, producto principalmente de la presencia y disputa de organizaciones criminales vinculadas al narcotráfico y economías ilegales, que aprovechan su ubicación estratégica como puerto y punto logístico en la costa ecuatoriana.</p>
+        <p class="texto-situacion">El cantón ${cantonTexto} atraviesa actualmente una crítica situación de seguridad debido al elevado índice de violencia, producto principalmente de la presencia y disputa de organizaciones criminales vinculadas al narcotráfico y economías ilegales, que aprovechan su ubicación estratégica como puerto y punto logístico en la costa ecuatoriana.</p>
     `);
     bloques.push(`
         <p class="texto-situacion-2">La pugna por el control territorial, rutas de salida de droga, microtráfico, extorsión y otros delitos conexos ha generado un incremento sostenido de muertes violentas, ataques armados y hechos delictivos, afectando tanto a sectores periféricos como a zonas urbanas y comerciales.</p>
@@ -2418,7 +2424,7 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en los e
     const fechaInicioMision = fechasMision.fechaInicioStr;
     const fechaFinMision = fechasMision.fechaFinStr;
 
-    const misionTexto = `El ${unidad}, ejecutará operaciones de Registro, el día ${fechaInicioMision} hasta ${fechaFinMision},en el cantón ${canton}, para neutralizar los ataques armados, amenazas o riesgos, orquestados por el crimen organizado, grupos armados organizados o terroristas o actores no estatales del conflicto armado interno, respetando el DIH y los DDHH y estricta observancia a la Ley Orgánica que regula el Uso Legítimo de la Fuerza.`;
+    const misionTexto = `El ${unidad}, ejecutará operaciones de Registro, el día ${fechaInicioMision} hasta ${fechaFinMision},en el cantón ${cantonTexto}, para neutralizar los ataques armados, amenazas o riesgos, orquestados por el crimen organizado, grupos armados organizados o terroristas o actores no estatales del conflicto armado interno, respetando el DIH y los DDHH y estricta observancia a la Ley Orgánica que regula el Uso Legítimo de la Fuerza.`;
 
     bloques.push(`<p class="texto-mision">${misionTexto}</p>`);
     bloques.push('<div class="vacio"></div>');
@@ -2808,8 +2814,9 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en los e
       '<div class="titulo-romano"><span class="marcador">I.</span>SITUACIÓN</div>',
     );
     bloques.push('<div class="vacio"></div>');
+    const cantonTexto = formatearNombreCanton(canton);
     bloques.push(`
-        <p class="texto-situacion">El cantón ${canton} atraviesa actualmente una crítica situación de seguridad debido al elevado índice de violencia, producto principalmente de la presencia y disputa de organizaciones criminales vinculadas al narcotráfico y economías ilegales, que aprovechan su ubicación estratégica como puerto y punto logístico en la costa ecuatoriana.</p>
+        <p class="texto-situacion">El cantón ${cantonTexto} atraviesa actualmente una crítica situación de seguridad debido al elevado índice de violencia, producto principalmente de la presencia y disputa de organizaciones criminales vinculadas al narcotráfico y economías ilegales, que aprovechan su ubicación estratégica como puerto y punto logístico en la costa ecuatoriana.</p>
     `);
     bloques.push(`
         <p class="texto-situacion-2">La pugna por el control territorial, rutas de salida de droga, microtráfico, extorsión y otros delitos conexos ha generado un incremento sostenido de muertes violentas, ataques armados y hechos delictivos, afectando tanto a sectores periféricos como a zonas urbanas y comerciales. Esta realidad ha deteriorado la percepción de seguridad ciudadana, alterando la dinámica social y económica del cantón, en este contexto, la violencia en Manta no responde a hechos aislados, sino a un problema latente que combina crimen organizado, vulnerabilidad social y economías ilícitas.</p>
@@ -3000,8 +3007,9 @@ const misionTexto = `El PMP del ${unidad}, brindará seguridad armada y protecci
       '<div class="titulo-romano"><span class="marcador">I.</span>SITUACIÓN</div>',
     );
     bloques.push('<div class="vacio"></div>');
+    const cantonTexto = formatearNombreCanton(canton);
     bloques.push(`
-        <p class="texto-situacion">El cantón ${canton} enfrenta actualmente una situación de seguridad compleja marcada por el incremento de hechos violentos, la cual se ve agravada por factores propios del sector, que constituye un punto sensible frente a posibles influencias del crimen organizado, tanto al interior como al exterior del CRS. se ha evidenciado la concentración de familiares de personas privadas de la libertad (PPL) en viviendas cercanas al CRS, mismos estarían incrementando actividades de apoyo externo, facilitando actividades ilícitas y generando condiciones que pueden afectar la seguridad ciudadana y el orden público en los sectores aledaños.</p>
+        <p class="texto-situacion">El cantón ${cantonTexto} enfrenta actualmente una situación de seguridad compleja marcada por el incremento de hechos violentos, la cual se ve agravada por factores propios del sector, que constituye un punto sensible frente a posibles influencias del crimen organizado, tanto al interior como al exterior del CRS. se ha evidenciado la concentración de familiares de personas privadas de la libertad (PPL) en viviendas cercanas al CRS, mismos estarían incrementando actividades de apoyo externo, facilitando actividades ilícitas y generando condiciones que pueden afectar la seguridad ciudadana y el orden público en los sectores aledaños.</p>
     `);
     bloques.push('<div class="vacio"></div>');
 
@@ -3017,7 +3025,7 @@ const misionTexto = `El PMP del ${unidad}, brindará seguridad armada y protecci
     const fechaInicioMision = fechasMision.fechaInicioStr;
 const fechaFinMision = fechasMision.fechaFinStr;
 
-const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en apoyo a la Policía Nacional, en el cantón ${canton} ${sector}, el día ${fechaInicioMision} hasta ${fechaFinMision}, para prevenir y neutralizar las actividades de grupos armados, a fin de reducir los índices de criminalidad y violencia, que inciden en la seguridad ciudadana respetando los derechos humanos y en estricta observancia a Ley Orgánica que Regula el Uso Legítimo de la Fuerza.`;
+const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en apoyo a la Policía Nacional, en el cantón ${cantonTexto} ${sector}, el día ${fechaInicioMision} hasta ${fechaFinMision}, para prevenir y neutralizar las actividades de grupos armados, a fin de reducir los índices de criminalidad y violencia, que inciden en la seguridad ciudadana respetando los derechos humanos y en estricta observancia a Ley Orgánica que Regula el Uso Legítimo de la Fuerza.`;
 
     bloques.push(`<p class="texto-mision">${misionTexto}</p>`);
     bloques.push('<div class="vacio"></div>');
@@ -3188,8 +3196,9 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en apoyo
       '<div class="titulo-romano"><span class="marcador">I.</span>SITUACIÓN</div>',
     );
     bloques.push('<div class="vacio"></div>');
+    const cantonTexto = formatearNombreCanton(canton);
     bloques.push(`
-        <p class="texto-situacion">El cantón ${canton} enfrenta actualmente una situación de seguridad preocupante, caracterizada por el incremento de hechos violentos, asociados principalmente a su ubicación estratégica en una zona costera de Manabí. Esta condición ha sido aprovechada por organizaciones delictivas vinculadas al narcotráfico y otras economías ilícitas, que utilizan el territorio como punto de tránsito, acopio y salida marítima de sustancias catalogadas sujetas a fiscalización, generando disputas por el control de rutas y zonas de influencia.</p>
+        <p class="texto-situacion">El cantón ${cantonTexto} enfrenta actualmente una situación de seguridad preocupante, caracterizada por el incremento de hechos violentos, asociados principalmente a su ubicación estratégica en una zona costera de Manabí. Esta condición ha sido aprovechada por organizaciones delictivas vinculadas al narcotráfico y otras economías ilícitas, que utilizan el territorio como punto de tránsito, acopio y salida marítima de sustancias catalogadas sujetas a fiscalización, generando disputas por el control de rutas y zonas de influencia.</p>
     `);
     bloques.push(`
         <p class="texto-situacion-2">La violencia se ve agravada por múltiples factores, entre ellos la disputa por el control territorial y las fracturas en la línea de mando del GAO "Los Choneros", que han intensificado los enfrentamientos internos. Estas dinámicas se complementan con condiciones socioeconómicas adversas, que incrementan la vulnerabilidad social y favorecen la captación de jóvenes por parte de las organizaciones criminales, fortaleciendo sus redes e incrementando los niveles de violencia en el territorio.</p>
@@ -3208,7 +3217,7 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en apoyo
 const fechaInicioMision = fechasMision.fechaInicioStr;
 const fechaFinMision = fechasMision.fechaFinStr;
 
-const misionTexto = `El PMP del ${unidad}, ejecutará operaciones en apoyo al Ministerio de Ambiente y Energía (CELEC), el día ${fechaInicioMision} hasta ${fechaFinMision} en el cantón ${canton}, sector ${sector}, a fin de identificar, aislar, prevenir y neutralizar la amenaza, cometimientos de actos hostiles y alteración del orden público que amenacen las ARS.`;
+const misionTexto = `El PMP del ${unidad}, ejecutará operaciones en apoyo al Ministerio de Ambiente y Energía (CELEC), el día ${fechaInicioMision} hasta ${fechaFinMision} en el cantón ${cantonTexto}, sector ${sector}, a fin de identificar, aislar, prevenir y neutralizar la amenaza, cometimientos de actos hostiles y alteración del orden público que amenacen las ARS.`;
 
     bloques.push(`<p class="texto-mision">${misionTexto}</p>`);
     bloques.push('<div class="vacio"></div>');
@@ -3374,8 +3383,9 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones en apoyo al Mi
       '<div class="titulo-romano"><span class="marcador">I.</span>SITUACIÓN</div>',
     );
     bloques.push('<div class="vacio"></div>');
+    const cantonTexto = formatearNombreCanton(canton);
     bloques.push(`
-        <p class="texto-situacion">El cantón ${canton} enfrenta actualmente una situación de seguridad compleja marcada por el incremento de hechos violentos, la cual se ve agravada por factores propios del sector, que constituye un punto sensible frente a posibles influencias del crimen organizado, tanto al interior como al exterior del CRS. se ha evidenciado la concentración de familiares de personas privadas de la libertad (PPL) en viviendas cercanas al CRS, mismos estarían incrementando actividades de apoyo externo, facilitando actividades ilícitas y generando condiciones que pueden afectar la seguridad ciudadana y el orden público en los sectores aledaños.</p>
+        <p class="texto-situacion">El cantón ${cantonTexto} enfrenta actualmente una situación de seguridad compleja marcada por el incremento de hechos violentos, la cual se ve agravada por factores propios del sector, que constituye un punto sensible frente a posibles influencias del crimen organizado, tanto al interior como al exterior del CRS. se ha evidenciado la concentración de familiares de personas privadas de la libertad (PPL) en viviendas cercanas al CRS, mismos estarían incrementando actividades de apoyo externo, facilitando actividades ilícitas y generando condiciones que pueden afectar la seguridad ciudadana y el orden público en los sectores aledaños.</p>
     `);
     bloques.push('<div class="vacio"></div>');
 
@@ -3391,7 +3401,7 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones en apoyo al Mi
 const fechaInicioMision = fechasMision.fechaInicioStr;
 const fechaFinMision = fechasMision.fechaFinStr;
 
-const misionTexto = `El PMP del ${unidad}, brindará seguridad en apoyo al MDN (antenas repetidoras), a partir ${fechaInicioMision} hasta ${fechaFinMision} en el cantón ${canton}, sector El Anegado en la antena repetidora del CCFFAA (cerro Corozo), a fin de identificar, aislar, prevenir y neutralizar la amenaza, cometimientos de actos hostiles y alteración del orden público que amenacen las ARS.`;
+const misionTexto = `El PMP del ${unidad}, brindará seguridad en apoyo al MDN (antenas repetidoras), a partir ${fechaInicioMision} hasta ${fechaFinMision} en el cantón ${cantonTexto}, sector El Anegado en la antena repetidora del CCFFAA (cerro Corozo), a fin de identificar, aislar, prevenir y neutralizar la amenaza, cometimientos de actos hostiles y alteración del orden público que amenacen las ARS.`;
 
     bloques.push(`<p class="texto-mision">${misionTexto}</p>`);
     bloques.push('<div class="vacio"></div>');
@@ -3459,6 +3469,10 @@ const misionTexto = `El PMP del ${unidad}, brindará seguridad en apoyo al MDN (
   }
 
   // ==============================================
+// GENERADOR DE DOCUMENTOS - OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS
+// ==============================================
+
+// ==============================================
 // GENERADOR DE DOCUMENTOS - OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS
 // ==============================================
 
@@ -3541,8 +3555,9 @@ _generarDocumentoSostenibles() {
         '<div class="titulo-romano"><span class="marcador">I.</span>SITUACIÓN</div>'
     );
     bloques.push('<div class="vacio"></div>');
+    const cantonTexto = formatearNombreCanton(canton);
     bloques.push(`
-        <p class="texto-situacion">El cantón ${canton} enfrenta actualmente una situación de seguridad preocupante, caracterizada por el incremento de hechos violentos, asociados principalmente a su ubicación estratégica en una zona costera de Manabí. Esta condición ha sido aprovechada por organizaciones delictivas vinculadas al narcotráfico y otras economías ilícitas, que utilizan el territorio como punto de tránsito, acopio y salida marítima de sustancias catalogadas sujetas a fiscalización, generando disputas por el control de rutas y zonas de influencia.</p>
+        <p class="texto-situacion">El cantón ${cantonTexto} enfrenta actualmente una situación de seguridad preocupante, caracterizada por el incremento de hechos violentos, asociados principalmente a su ubicación estratégica en una zona costera de Manabí. Esta condición ha sido aprovechada por organizaciones delictivas vinculadas al narcotráfico y otras economías ilícitas, que utilizan el territorio como punto de tránsito, acopio y salida marítima de sustancias catalogadas sujetas a fiscalización, generando disputas por el control de rutas y zonas de influencia.</p>
     `);
     bloques.push(`
         <p class="texto-situacion-2">La violencia se ve agravada por múltiples factores, entre ellos la disputa por el control territorial y las fracturas en la línea de mando del GAO "Los Choneros", que han intensificado los enfrentamientos internos. Estas dinámicas se complementan con condiciones socioeconómicas adversas, que incrementan la vulnerabilidad social y favorecen la captación de jóvenes por parte de las organizaciones criminales, fortaleciendo sus redes e incrementando los niveles de violencia en el territorio.</p>
@@ -3559,16 +3574,17 @@ _generarDocumentoSostenibles() {
 
     // ✅ CONDICIÓN: MANTA vs OTRO CANTÓN
     const esManta = canton.toUpperCase().trim() === "MANTA";
+    
 
     let misionTexto = "";
     if (esManta) {
         // ✅ MANTA: misión sin sector, CON tabla
         misionTexto =
-            `El PMP del ${unidad}, ejecutará Operaciones Sostenibles en Áreas Criticas, en el canton ${canton}, el día ${fechaInicioStr} hasta ${fechaFinStr}, para neutralizar los ataques armados, amenazas o riesgos, orquestados por el crimen organizado, grupos armados organizados o terroristas o actores no estatales del conflicto armado interno, respetando el DIH y los DDHH y estricta observancia a la ley orgánica que regula el uso legítimo de la fuerza.`;
+            `El PMP del ${unidad}, ejecutará Operaciones Sostenibles en Áreas Criticas, en el canton ${cantonTexto}, el día ${fechaInicioStr} hasta ${fechaFinStr}, para neutralizar los ataques armados, amenazas o riesgos, orquestados por el crimen organizado, grupos armados organizados o terroristas o actores no estatales del conflicto armado interno, respetando el DIH y los DDHH y estricta observancia a la ley orgánica que regula el uso legítimo de la fuerza.`;
     } else {
         // ✅ OTRO CANTÓN: misión CON sector, SIN tabla
         misionTexto =
-            `El PMP del ${unidad}, ejecutará Operaciones Sostenibles en Áreas Criticas, en el canton ${canton}, sector ${sectorTexto}, el día ${fechaInicioStr} hasta ${fechaFinStr}, para neutralizar los ataques armados, amenazas o riesgos, orquestados por el crimen organizado, grupos armados organizados o terroristas o actores no estatales del conflicto armado interno, respetando el DIH y los DDHH y estricta observancia a la ley orgánica que regula el uso legítimo de la fuerza.`;
+            `El PMP del ${unidad}, ejecutará Operaciones Sostenibles en Áreas Criticas, en el canton ${cantonTexto}, sector ${sectorTexto}, el día ${fechaInicioStr} hasta ${fechaFinStr}, para neutralizar los ataques armados, amenazas o riesgos, orquestados por el crimen organizado, grupos armados organizados o terroristas o actores no estatales del conflicto armado interno, respetando el DIH y los DDHH y estricta observancia a la ley orgánica que regula el uso legítimo de la fuerza.`;
     }
 
     bloques.push(`<p class="texto-mision">${misionTexto}</p>`);
@@ -3603,15 +3619,23 @@ _generarDocumentoSostenibles() {
     // 8. TABLA DE EJECUCIÓN (SOLO PARA MANTA)
     // ==============================================
     if (esManta) {
-        // Filtrar solo operaciones de tipo OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS
-        const operacionesFiltradas = filtrarPorTipoOperacion(
-            this.operacionesAgrupadas,
-            "OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS"
-        );
+        console.log("📋 Generando tabla para MANTA");
+
+        // ✅ Filtrar operaciones de tipo OPERACIONES SOSTENIBLES (con y sin acentos)
+        const operacionesFiltradas = this.operacionesAgrupadas.filter((op) => {
+            const tipo = String(op.tipoOperacion || '').toUpperCase().trim().replace(/\s+/g, " ");
+            console.log(`🔍 Verificando tipo: "${tipo}"`);
+            // ✅ Comparar con ambas variantes (con y sin acentos)
+            return tipo.includes("OPERACIONES SOSTENIBLES") ||
+                   tipo === "OPERACIONES SOSTENIBLES EN AREAS CRITICAS" ||
+                   tipo === "OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS";
+        });
+
+        console.log(`📊 Operaciones filtradas para tabla: ${operacionesFiltradas.length}`);
 
         let filasTabla = "";
         if (operacionesFiltradas.length > 0) {
-            operacionesFiltradas.forEach((op) => {
+            operacionesFiltradas.forEach((op, index) => {
                 const canton = op.canton || "N/A";
                 const parroquia = op.parroquia || "N/A";
                 const sector = op.sector || "N/A";
@@ -3641,28 +3665,37 @@ _generarDocumentoSostenibles() {
                     </tr>
                 `;
             });
+        } else {
+            // ✅ Si no hay registros filtrados, mostrar mensaje
+            filasTabla = `
+                <tr>
+                    <td colspan="5" style="text-align:center; color:#999; padding:15px;">
+                        No se encontraron registros de OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS
+                    </td>
+                </tr>
+            `;
         }
 
-        // ✅ Generar tabla SOLO si hay registros
-        if (filasTabla) {
-            bloques.push(`
-                <table class="tabla-operaciones tabla-sostenibles">
-                    <thead>
-                        <tr>
-                            <th>CANTÓN</th>
-                            <th>PARROQUIA</th>
-                            <th>SECTOR</th>
-                            <th>HORARIO</th>
-                            <th>TIPO DE OPERACIÓN</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${filasTabla}
-                    </tbody>
-                </table>
-            `);
-            bloques.push('<div class="vacio"></div>');
-        }
+        // ✅ Generar tabla
+        bloques.push(`
+            <table class="tabla-operaciones tabla-sostenibles">
+                <thead>
+                    <tr>
+                        <th>CANTÓN</th>
+                        <th>PARROQUIA</th>
+                        <th>SECTOR</th>
+                        <th>HORARIO</th>
+                        <th>TIPO DE OPERACIÓN</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${filasTabla}
+                </tbody>
+            </table>
+        `);
+        bloques.push('<div class="vacio"></div>');
+    } else {
+        console.log(`📋 Cantón ${canton} NO es MANTA, NO se genera tabla`);
     }
 
     // ==============================================
@@ -3700,6 +3733,7 @@ _generarDocumentoSostenibles() {
     // ==============================================
     bloques.push(...this._generarAnexos());
 
+    console.log('✅ Documento OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS generado');
     return bloques;
 }
 
@@ -3811,16 +3845,18 @@ _generarDocumentoSostenibles() {
       cantonNormalizado === "MONTECRISTI" || cantonNormalizado === "MANTA";
 
     let situacionTexto = "";
+    const cantonTexto = formatearNombreCanton(canton);
 
     if (esCantonEspecial) {
       // Texto especial para MONTECRISTI o MANTA
+      
       situacionTexto = `
-        <p class="texto-situacion">El cantón ${canton} es considerada como zona estratégica para las organizaciones narco delictivas; así mismo, este cantón es utilizado como corredor de movilidad de SCSF por vía marítima, terrestre y aérea, donde estas bandas delincuenciales utilizan los puertos y muelles clandestinos para el acopio y transporte de alcaloide por vía marítima hacia otros países, siendo esta una de las razones de enfrentamientos de los grupos delincuenciales, situación que ha permitido que sea uno de los cantones más violentos del país, en lo que va del presente año, esto debido a la guerra que al momento existe entre las bandas delictivas (Los Choneros y Lobos), con la finalidad de mantener el poder y hegemonía del área para el cometimiento de delitos al margen de la ley, entre los cuales prioriza el microtráfico, extorciones, secuestros y sicariatos.</p>
+        <p class="texto-situacion">El cantón ${cantonTexto} es considerada como zona estratégica para las organizaciones narco delictivas; así mismo, este cantón es utilizado como corredor de movilidad de SCSF por vía marítima, terrestre y aérea, donde estas bandas delincuenciales utilizan los puertos y muelles clandestinos para el acopio y transporte de alcaloide por vía marítima hacia otros países, siendo esta una de las razones de enfrentamientos de los grupos delincuenciales, situación que ha permitido que sea uno de los cantones más violentos del país, en lo que va del presente año, esto debido a la guerra que al momento existe entre las bandas delictivas (Los Choneros y Lobos), con la finalidad de mantener el poder y hegemonía del área para el cometimiento de delitos al margen de la ley, entre los cuales prioriza el microtráfico, extorciones, secuestros y sicariatos.</p>
     `;
     } else {
       // Texto original para otros cantones
       situacionTexto = `
-        <p class="texto-situacion">El cantón ${canton} enfrenta actualmente una situación de seguridad preocupante, caracterizada por el incremento de hechos violentos, asociados principalmente a su ubicación estratégica en una zona costera de Manabí. Esta condición ha sido aprovechada por organizaciones delictivas vinculadas al narcotráfico y otras economías ilícitas, que utilizan el territorio como punto de tránsito, acopio y salida marítima de sustancias catalogadas sujetas a fiscalización, generando disputas por el control de rutas y zonas de influencia.</p>
+        <p class="texto-situacion">El cantón ${cantonTexto} enfrenta actualmente una situación de seguridad preocupante, caracterizada por el incremento de hechos violentos, asociados principalmente a su ubicación estratégica en una zona costera de Manabí. Esta condición ha sido aprovechada por organizaciones delictivas vinculadas al narcotráfico y otras economías ilícitas, que utilizan el territorio como punto de tránsito, acopio y salida marítima de sustancias catalogadas sujetas a fiscalización, generando disputas por el control de rutas y zonas de influencia.</p>
         <p class="texto-situacion-2">La violencia se ve agravada por múltiples factores, entre ellos la disputa por el control territorial y las fracturas en la línea de mando del GAO "Los Choneros", que han intensificado los enfrentamientos internos. Estas dinámicas se complementan con condiciones socioeconómicas adversas, que incrementan la vulnerabilidad social y favorecen la captación de jóvenes por parte de las organizaciones criminales, fortaleciendo sus redes e incrementando los niveles de violencia en el territorio.</p>
     `;
     }
@@ -3840,7 +3876,8 @@ _generarDocumentoSostenibles() {
 const fechaInicioMision = fechasMision.fechaInicioStr;
 const fechaFinMision = fechasMision.fechaFinStr;
 
-const misionTexto = `El PMP del ${unidad}, ejecutará Retén Militar, en el cantón ${canton} ${sector}, el día ${fechaInicioMision} hasta ${fechaFinMision}, para prevenir delitos, como el tráfico ilegal de combustible, a fin de desgastar e inhabilitar la capacidad de los GAOs / GDOs / GDOTs; contribuyendo a la seguridad integral del Estado, protección de los derechos, libertades y garantías de los ciudadanos.`;
+
+const misionTexto = `El PMP del ${unidad}, ejecutará Retén Militar, en el cantón ${cantonTexto} ${sector}, el día ${fechaInicioMision} hasta ${fechaFinMision}, para prevenir delitos, como el tráfico ilegal de combustible, a fin de desgastar e inhabilitar la capacidad de los GAOs / GDOs / GDOTs; contribuyendo a la seguridad integral del Estado, protección de los derechos, libertades y garantías de los ciudadanos.`;
 
     bloques.push(`<p class="texto-mision">${misionTexto}</p>`);
     bloques.push('<div class="vacio"></div>');

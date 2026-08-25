@@ -258,39 +258,45 @@
                     </section>
 
                     <!-- ===== FILTROS DE BÚSQUEDA ===== -->
-<section class="filtros-container" id="filtrosContainer">
-    <div class="filtros-header">
-        <h3><i class="fa-solid fa-filter"></i> Filtros de Búsqueda</h3>
-        <button type="button" id="btnLimpiarFiltros" class="btn-limpiar-filtros">
-            <i class="fa-solid fa-eraser"></i> Limpiar filtros
-        </button>
-    </div>
-    <div class="filtros-grid">
-        <div class="filtro-grupo">
-            <label for="filtroTipoOperacion"><i class="fa-solid fa-tag"></i> Tipo Operación</label>
-            <input type="text" id="filtroTipoOperacion" placeholder="Ej: RASTRILLAJE, REGISTRO..." class="filtro-input">
-        </div>
-        <div class="filtro-grupo">
-            <label for="filtroNumeroAccion"><i class="fa-solid fa-hashtag"></i> N° Acción Táctica</label>
-            <input type="text" id="filtroNumeroAccion" placeholder="Ej: 7299, 7300..." class="filtro-input">
-        </div>
-        <div class="filtro-grupo">
-            <label for="filtroCanton"><i class="fa-solid fa-map-pin"></i> Cantón</label>
-            <input type="text" id="filtroCanton" placeholder="Ej: MANTA, PORTOVIEJO..." class="filtro-input">
-        </div>
-        <div class="filtro-grupo">
-            <label for="filtroParroquia"><i class="fa-solid fa-location-dot"></i> Parroquia</label>
-            <input type="text" id="filtroParroquia" placeholder="Ej: MANTA, EL RODEO..." class="filtro-input">
-        </div>
-        <div class="filtro-grupo">
-            <label for="filtroSector"><i class="fa-solid fa-road"></i> Sector</label>
-            <input type="text" id="filtroSector" placeholder="Ej: CIUDADELA, VÍA..." class="filtro-input">
-        </div>
-    </div>
-    <div class="filtros-contador">
-        <span id="filtroResultados">Mostrando <strong>0</strong> OATs</span>
-    </div>
-</section>
+                    <section class="filtros-container" id="filtrosContainer">
+                        <div class="filtros-header">
+                            <h3><i class="fa-solid fa-filter"></i> Filtros de Búsqueda</h3>
+                            <button type="button" id="btnLimpiarFiltros" class="btn-limpiar-filtros">
+                                <i class="fa-solid fa-eraser"></i> Limpiar filtros
+                            </button>
+                        </div>
+                        <div class="filtros-grid">
+                            <div class="filtro-grupo">
+                                <label for="filtroTipoOperacion"><i class="fa-solid fa-tag"></i> Tipo Operación</label>
+                                <input type="text" id="filtroTipoOperacion" placeholder="Ej: RASTRILLAJE, REGISTRO..."
+                                    class="filtro-input">
+                            </div>
+                            <div class="filtro-grupo">
+                                <label for="filtroNumeroAccion"><i class="fa-solid fa-hashtag"></i> N° Acción
+                                    Táctica</label>
+                                <input type="text" id="filtroNumeroAccion" placeholder="Ej: 7299, 7300..."
+                                    class="filtro-input">
+                            </div>
+                            <div class="filtro-grupo">
+                                <label for="filtroCanton"><i class="fa-solid fa-map-pin"></i> Cantón</label>
+                                <input type="text" id="filtroCanton" placeholder="Ej: MANTA, PORTOVIEJO..."
+                                    class="filtro-input">
+                            </div>
+                            <div class="filtro-grupo">
+                                <label for="filtroParroquia"><i class="fa-solid fa-location-dot"></i> Parroquia</label>
+                                <input type="text" id="filtroParroquia" placeholder="Ej: MANTA, EL RODEO..."
+                                    class="filtro-input">
+                            </div>
+                            <div class="filtro-grupo">
+                                <label for="filtroSector"><i class="fa-solid fa-road"></i> Sector</label>
+                                <input type="text" id="filtroSector" placeholder="Ej: CIUDADELA, VÍA..."
+                                    class="filtro-input">
+                            </div>
+                        </div>
+                        <div class="filtros-contador">
+                            <span id="filtroResultados">Mostrando <strong>0</strong> OATs</span>
+                        </div>
+                    </section>
 
                     <!-- TABLA DE DATOS -->
                     <section id="contenedorTabla" class="table-container">
@@ -415,18 +421,18 @@
      VISTA: PARTE AL INSTANTE
      ============================================== -->
                 <div id="vistaParte" class="vista-panel parte-container">
-                        <!-- ===== SELECTOR DE COMANDANTE (igual que en OAT) ===== -->
-    <section class="selector-container" id="selectorContainerParte">
-        <div class="selector-group">
-            <label for="comandanteSelectParte">Comandante:</label>
-            <select id="comandanteSelectParte">
-                <option value="">-- Seleccionar --</option>
-            </select>
-            <select id="funcionComandanteSelectParte">  
-                <option value="">-- Función --</option>
-            </select>
-        </div>
-    </section>
+                    <!-- ===== SELECTOR DE COMANDANTE (igual que en OAT) ===== -->
+                    <section class="selector-container" id="selectorContainerParte">
+                        <div class="selector-group">
+                            <label for="comandanteSelectParte">Comandante:</label>
+                            <select id="comandanteSelectParte">
+                                <option value="">-- Seleccionar --</option>
+                            </select>
+                            <select id="funcionComandanteSelectParte">
+                                <option value="">-- Función --</option>
+                            </select>
+                        </div>
+                    </section>
                     <div class="parte-datos-mensaje">
                         <h2 style="margin-bottom: 10px; color: #1a237e;">📨 Parte al Instante</h2>
                         <p style="color: #666; margin-bottom: 12px; font-size: 13px;">
