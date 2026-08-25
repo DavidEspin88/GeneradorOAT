@@ -77,14 +77,6 @@
     color: white;
 }
 
-.btn-print {
-    background: var(--color-success);
-}
-
-.btn-print:hover {
-    background: #218838;
-    transform: translateY(-1px);
-}
 
 .btn-close {
     background: var(--color-error);
@@ -110,26 +102,4 @@
     box-shadow: var(--shadow-card);
 }
 /* ===== BOTÓN DESCARGAR WORD ===== */
-.btn-download {
-    background: #2b5797;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-size: var(--fs-13);
-    font-weight: var(--fw-semibold);
-    transition: var(--transition-base);
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
 
-.btn-download:hover {
-    background: #1a3f6a;
-    transform: translateY(-1px);
-}
-
-.btn-download i {
-    font-size: 16px;
-}

@@ -18,21 +18,42 @@ export function cargarConfiguracionCompleta() {
         console.log('🔄 Cargando configuración desde Apps Script...');
         console.log('📡 URL:', url);
         
-        // ✅ Aumentar timeout a 15 segundos (Apps Script puede ser lento)
-        const timeoutId = setTimeout(() => {
-            // ✅ Limpiar solo si la función aún existe
-            if (window[callbackName]) {
-                delete window[callbackName];
-            }
+        // ✅ Timeout más generoso: doGet() ahora lee 17 hojas de Sheets,
+        // así que puede tardar más de 15s, sobre todo justo después de
+        // un redeploy (arranque en frío de Apps Script).
+        const TIMEOUT_MS = 25000;
+
+        let respondido = false;
+
+        const limpiarScript = () => {
             if (script.parentNode) {
                 script.parentNode.removeChild(script);
             }
+        };
+
+        const timeoutId = setTimeout(() => {
+            respondido = true;
+            // ✅ IMPORTANTE: no borrar window[callbackName] con delete.
+            // Si Apps Script responde DESPUÉS del timeout, el navegador
+            // igual va a intentar ejecutar callback_XXX(...) porque el
+            // <script src="...&callback=callback_XXX"> ya se cargó. Si la
+            // función ya no existe, eso lanza un ReferenceError sin
+            // control. En su lugar, dejamos una función "vacía" que
+            // absorbe esa respuesta tardía sin romper nada.
+            window[callbackName] = function(dataTardia) {
+                console.log('ℹ️ Configuración llegó tarde (después del timeout), se ignora.');
+                delete window[callbackName];
+            };
+            limpiarScript();
             console.warn('⚠️ Timeout al cargar configuración, usando fallback');
             resolve(null);
-        }, 15000);
+        }, TIMEOUT_MS);
         
         // ✅ Definir el callback ANTES de cargar el script
         window[callbackName] = function(data) {
+            if (respondido) return; // ya se resolvió por timeout, ignorar
+            respondido = true;
+
             // ✅ Limpiar timeout y elementos
             clearTimeout(timeoutId);
             
@@ -40,9 +61,7 @@ export function cargarConfiguracionCompleta() {
             if (window[callbackName]) {
                 delete window[callbackName];
             }
-            if (script.parentNode) {
-                script.parentNode.removeChild(script);
-            }
+            limpiarScript();
             
             console.log('✅ Configuración cargada desde Google Apps Script');
             console.log('📊 Datos recibidos:', Object.keys(data));
@@ -51,13 +70,14 @@ export function cargarConfiguracionCompleta() {
         
         // ✅ Manejar errores de carga
         script.onerror = function() {
+            if (respondido) return;
+            respondido = true;
+
             clearTimeout(timeoutId);
             if (window[callbackName]) {
                 delete window[callbackName];
             }
-            if (script.parentNode) {
-                script.parentNode.removeChild(script);
-            }
+            limpiarScript();
             console.warn('⚠️ Error al cargar configuración, usando fallback');
             resolve(null);
         };

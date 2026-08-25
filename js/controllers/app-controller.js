@@ -509,6 +509,7 @@ _configurarFiltros() {
         const numAccion = grupo.numero || '7299';
         const datosCombinados = combinarOperaciones(grupo.operaciones);
 
+
         let fechaParaDocumento = this.dateController.getFechaSeleccionada();
         if (!fechaParaDocumento || isNaN(fechaParaDocumento.getTime())) {
             fechaParaDocumento = new Date();
@@ -701,24 +702,6 @@ _configurarFiltros() {
      * carrera al copiar la plantilla). Al final muestra un resumen con
      * los enlaces generados y cualquier error.
      */
-    /**
-     * ✅ Carga JSZip dinámicamente desde CDN si aún no está disponible
-     * en la página (mismo patrón que la comprobación de html2pdf).
-     * @returns {Promise<void>}
-     */
-    _cargarJSZip() {
-        if (typeof JSZip !== 'undefined') {
-            return Promise.resolve();
-        }
-        return new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error('No se pudo cargar JSZip desde el CDN.'));
-            document.body.appendChild(script);
-        });
-    }
-
     async onGenerarDesdeSeleccion() {
         const seleccionadas = this.tableController.getGruposSeleccionados();
 
@@ -741,19 +724,10 @@ _configurarFiltros() {
             return;
         }
 
-        try {
-            await this._cargarJSZip();
-        } catch (error) {
-            alert('❌ ' + error.message);
-            return;
-        }
-
         this.elements.btnGenerarSeleccion.disabled = true;
         const textoOriginalBoton = this.elements.btnGenerarSeleccion.textContent;
 
-        const zip = new JSZip();
         const resultados = [];
-        let archivosAgregados = 0;
 
         for (let i = 0; i < seleccionadas.length; i++) {
             const { grupo, numAccion } = seleccionadas[i];
@@ -767,49 +741,14 @@ _configurarFiltros() {
             }
 
             try {
-                const { payload, bloquesHtml, fechaParaDocumento } = this._construirDatosDocumento(grupo);
+                const { payload } = this._construirDatosDocumento(grupo);
 
-                // ✅ 1. Generar el PDF como Blob (sin descargarlo individualmente)
-                // y agregarlo al .zip. Empaquetar todo en un solo archivo evita
-                // el bloqueo del navegador a descargas automáticas múltiples.
-                try {
-                    const { blob, nombreArchivo } = await this.modalController.generarBlobPDF(
-                        bloquesHtml, numAccion, fechaParaDocumento
-                    );
-                    zip.file(nombreArchivo, blob);
-                    archivosAgregados++;
-                } catch (errorPdf) {
-                    console.error(`❌ Error al generar PDF de OAT ${numAccion}:`, errorPdf);
-                }
-
-                // ✅ 2. Enviar a Apps Script para generar/guardar el documento
+                // ✅ Enviar a Apps Script para generar/guardar el documento
                 // de Google Docs en Drive.
                 const resultado = await this._enviarAAppsScript(payload);
                 resultados.push({ numAccion, ...resultado });
             } catch (error) {
                 resultados.push({ numAccion, ok: false, mensaje: error.message });
-            }
-        }
-
-        // ✅ 3. Una sola descarga: el .zip con todos los PDFs generados
-        if (archivosAgregados > 0) {
-            this.elements.btnGenerarSeleccion.textContent = 'Empaquetando PDFs...';
-            try {
-                const zipBlob = await zip.generateAsync({ type: 'blob' });
-                const nombreZip = archivosAgregados === 1
-                    ? `${resultados[0]?.numAccion || 'OAT'}.zip`
-                    : `OATs_${new Date().toISOString().slice(0, 10)}.zip`;
-
-                const enlace = document.createElement('a');
-                enlace.href = URL.createObjectURL(zipBlob);
-                enlace.download = nombreZip;
-                document.body.appendChild(enlace);
-                enlace.click();
-                document.body.removeChild(enlace);
-                URL.revokeObjectURL(enlace.href);
-            } catch (errorZip) {
-                console.error('❌ Error al generar el .zip:', errorZip);
-                alert('❌ Error al empaquetar los PDFs: ' + errorZip.message);
             }
         }
 
@@ -819,8 +758,7 @@ _configurarFiltros() {
         const exitosos = resultados.filter((r) => r.ok);
         const fallidos = resultados.filter((r) => !r.ok);
 
-        let mensaje = `✅ ${archivosAgregados} de ${seleccionadas.length} PDFs empaquetados y descargados en un .zip.\n`;
-        mensaje += `✅ ${exitosos.length} de ${resultados.length} documentos guardados en Drive.\n`;
+        let mensaje = `✅ ${exitosos.length} de ${resultados.length} documentos guardados en Drive.\n`;
         exitosos.forEach((r) => {
             mensaje += `\n• OAT ${r.numAccion}: ${r.url}`;
         });
@@ -1007,6 +945,7 @@ function extraerTablas(bloques) {
         else if (tabla.classList.contains('tabla-apoyo-mineduc')) tipo = 'mineduc';
         else if (tabla.classList.contains('tabla-camex-ejes-viales')) tipo = 'camex';
         else if (tabla.classList.contains('tabla-apoyo-snai')) tipo = 'snai';
+        else if (tabla.classList.contains('tabla-sostenibles')) tipo = 'sostenibles';
         // Extraer encabezados (texto Y ancho configurado en Sheets)
         const thead = tabla.querySelector('thead');
         const headers = [];
