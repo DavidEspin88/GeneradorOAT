@@ -361,6 +361,52 @@
     text-align: center;
 }
 
+/* ===== TABLA APOYO SNAI ===== */
+/* ✅ Agregado (P-08): document-generator.js genera esta tabla con clase
+   "tabla-operaciones tabla-apoyo-snai" (combina ambas), a diferencia de
+   las demás tablas de operación que son autocontenidas. Por eso aquí NO
+   se redefine width/border/margin (eso ya lo da .tabla-operaciones) —
+   solo se agrega lo que faltaba para que luzca igual que las demás:
+   fondo del encabezado, cebrado de filas, hover y anchos de columna
+   (10% / 16% / 74%, según TABLA_COLUMNAS: ORD, HORARIO, ACTIVIDADES Y SECTOR). */
+.tabla-apoyo-snai {
+    font-size: var(--fs-9);
+}
+
+.tabla-apoyo-snai th {
+    background: #f5f5f5;
+}
+
+.tabla-apoyo-snai td {
+    padding: 4px 6px;
+}
+
+.tabla-apoyo-snai tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.tabla-apoyo-snai tr:hover {
+    background: #e8f0fe;
+}
+
+.tabla-apoyo-snai th:nth-child(1),
+.tabla-apoyo-snai td:nth-child(1) {
+    width: 10%;
+    text-align: center;
+}
+
+.tabla-apoyo-snai th:nth-child(2),
+.tabla-apoyo-snai td:nth-child(2) {
+    width: 16%;
+    text-align: center;
+}
+
+.tabla-apoyo-snai th:nth-child(3),
+.tabla-apoyo-snai td:nth-child(3) {
+    width: 74%;
+    text-align: left;
+}
+
 /* ===== BOTÓN VER ORDEN ===== */
 .btn-ver-orden {
     background: none;
