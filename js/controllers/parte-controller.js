@@ -211,7 +211,7 @@ export class ParteController {
     // ==========================================================
     // 4. ENVIAR A GOOGLE DOCS — SÍ usa comandante
     // ==========================================================
-_enviarGoogleDocs() {
+async _enviarGoogleDocs() {
     const texto = this.textoArea ? this.textoArea.value : '';
     
     if (!texto.trim()) {
@@ -239,63 +239,48 @@ _enviarGoogleDocs() {
         fechaEncabezado: fechaEncabezado
     };
     
-    console.log('📤 Enviando a Google Docs (JSONP):', JSON.stringify(payload, null, 2));
+    console.log('📤 Enviando a Google Docs (POST):', JSON.stringify(payload, null, 2));
     
-    // ✅ USAR JSONP CON GET
-    const callbackName = 'callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+    // ✅ P-10: antes se mandaba por JSONP GET con el payload entero como
+    // query param (&data=...encodeURIComponent...). Con partes largos de
+    // WhatsApp, la URL podía acercarse o superar el límite práctico de
+    // longitud. Ahora se manda por POST normal, con el payload en el
+    // body — el mismo patrón que ya usa _enviarAAppsScript() en
+    // app-controller.js para el OAT principal. El Apps Script #2 ya
+    // tenía doPost() implementado (llamando a la misma procesarDatos()
+    // compartida), así que no hizo falta tocar el backend otra vez.
     const URL_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxqiE8opUBUT77znu1-5l-BiWUQYfCXcs6bfUR0yMTNNHDpme38aOaz4-C2BD8jXko/exec';
     
-    // Convertir payload a JSON string y codificarlo para URL
-    const dataJson = JSON.stringify(payload);
-    const url = URL_WEBHOOK + '?callback=' + callbackName + '&data=' + encodeURIComponent(dataJson);
+    if (this.btnGoogleDocs) {
+        this.btnGoogleDocs.disabled = true;
+    }
     
-    console.log('📡 URL de solicitud:', url);
-    
-    // ✅ Crear script para JSONP
-    const script = document.createElement('script');
-    script.src = url;
-    
-    // ✅ Definir callback
-    window[callbackName] = function(response) {
-        console.log('📥 Respuesta de Apps Script:', response);
-        delete window[callbackName];
-        document.body.removeChild(script);
+    try {
+        const response = await fetch(URL_WEBHOOK, {
+            method: 'POST',
+            // text/plain evita el preflight OPTIONS (mismo truco que ya
+            // usa app-controller.js), reduciendo la posibilidad de que
+            // el navegador bloquee la respuesta por CORS.
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload),
+        });
         
-        if (response.estatus === 'OK') {
-            alert('✅ Documento generado correctamente.\n\nURL: ' + response.urlDocumento);
+        const resultado = await response.json();
+        console.log('📥 Respuesta de Apps Script:', resultado);
+        
+        if (resultado.estatus === 'OK') {
+            alert('✅ Documento generado correctamente.\n\nURL: ' + resultado.urlDocumento);
         } else {
-            alert('❌ Error: ' + response.mensaje);
+            alert('❌ Error: ' + resultado.mensaje);
         }
-    };
-    
-    // ✅ Manejar errores de carga
-    script.onerror = function() {
-        console.error('❌ Error al cargar el script JSONP');
-        delete window[callbackName];
-        if (script.parentNode) {
-            document.body.removeChild(script);
+    } catch (error) {
+        console.error('❌ Error al enviar la información:', error);
+        alert('❌ Error al enviar la información. No se pudo conectar con Google Apps Script.\n\n' + error.message);
+    } finally {
+        if (this.btnGoogleDocs) {
+            this.btnGoogleDocs.disabled = false;
         }
-        alert('❌ Error al enviar la información. No se pudo conectar con Google Apps Script.');
-    };
-    
-    // ✅ Timeout para evitar que el script se quede colgado
-    const timeoutId = setTimeout(function() {
-        console.warn('⏰ Timeout en JSONP');
-        delete window[callbackName];
-        if (script.parentNode) {
-            document.body.removeChild(script);
-        }
-        alert('⏰ Timeout: La solicitud tardó demasiado. Intenta nuevamente.');
-    }, 30000);
-    
-    // ✅ Modificar el callback para limpiar el timeout
-    const originalCallback = window[callbackName];
-    window[callbackName] = function(response) {
-        clearTimeout(timeoutId);
-        originalCallback(response);
-    };
-    
-    document.body.appendChild(script);
+    }
 }
     /**
      * Obtiene la fecha para el encabezado en formato DDHHMM-MES-AA
