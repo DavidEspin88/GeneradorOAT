@@ -161,6 +161,33 @@ export class ParteExtractor {
     }
     
     /**
+     * ✅ Extrae el campo APREHENDIDOS del texto. A diferencia de los
+     * demás campos, este vive DENTRO del bloque de RESULTADO (después
+     * de las líneas con guion, antes de CUANDO), no en su propia
+     * sección delimitada por los CAMPOS_CONOCIDOS habituales.
+     * Si el campo no aparece en el texto, o aparece explícitamente
+     * como "NINGUNO", devuelve 'NINGUNO' en ambos casos (nunca 'N/A').
+     * @param {string} texto
+     * @returns {string}
+     */
+    extraerAprehendidos(texto) {
+        if (!texto) return 'NINGUNO';
+
+        const match = texto.match(
+            /\*?APREHENDIDOS\*?\s*:\*?\s*([\s\S]*?)(?=\*?CUANDO\s*:|\*?CU[AÁ]NDO\s*:|$)/i
+        );
+
+        if (!match || typeof match[1] === 'undefined') return 'NINGUNO';
+
+        let valor = match[1].trim();
+        valor = valor.replace(/^\*+|\*+$/g, '').trim();
+
+        if (!valor || valor.toUpperCase() === 'NINGUNO') return 'NINGUNO';
+
+        return valor;
+    }
+
+    /**
      * Extrae todos los campos en un solo objeto
      * @param {string} texto
      * @returns {Object}
@@ -191,6 +218,7 @@ export class ParteExtractor {
             comoFull: comoInfo.comoFull,
             comoCortado: comoInfo.comoCortado,
             resultados: this.extraerResultados(texto),
+            aprehendidos: this.extraerAprehendidos(texto),
             quien: quienInfo.quien,
             fuente: quienInfo.fuente,
             cuando: this.extraerCampo(texto, 'CUANDO|CUÁ?NDO'),

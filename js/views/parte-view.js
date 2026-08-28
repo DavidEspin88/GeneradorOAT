@@ -69,6 +69,8 @@ export class ParteModals {
                 <p><strong>RESULTADOS:</strong></p>
                 <p>${datos.resultados}</p>
                 <hr>
+                <p><strong>APREHENDIDOS:</strong> ${datos.aprehendidos}</p>
+                <hr>
                 <p><strong>QUIÉN:</strong> ${datos.quien}</p>
                 <hr>
                 <p><strong>QUÉ/CÓMO:</strong> ${datos.comoCortado}</p>
