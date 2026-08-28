@@ -199,26 +199,34 @@
    BOTÓN ENVIAR A GOOGLE DOCS
    ============================================== */
 
-.parte-btn-google-docs {
-    margin-top: 15px;
-    text-align: right;
+.parte-btn-google-docs { 
+  margin-top: 15px; 
+  text-align: right; 
+} 
+
+.parte-btn-google-docs button { 
+  padding: 12px 20px; 
+  color: #fff; 
+  background-color: #1111df; 
+  border: none; 
+  border-radius: 8px; 
+  cursor: pointer; 
+  font-weight: bold; 
+  /* Añadimos transform a la transición para que el efecto sea suave */
+  transition: background-color 0.15s ease-in-out, transform 0.1s ease-in-out; 
+  /* Opcional: una ligera sombra inicial da más realismo al hundirse */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+} 
+
+.parte-btn-google-docs button:hover { 
+  background-color: #52528e; 
 }
 
-.parte-btn-google-docs button {
-    padding: 12px 20px;
-    color: #fff;
-    background-color: #1111df;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background-color 0.15s ease;
+/* NUEVO: Efecto cuando se presiona (hunde) el botón */
+.parte-btn-google-docs button:active {
+  transform: translateY(2px); /* Mueve el botón 2 píxeles hacia abajo */
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15); /* Reduce la sombra para simular cercanía a la pantalla */
 }
-
-.parte-btn-google-docs button:hover {
-    background-color: #52528e;
-}
-
 /* ==============================================
    RESPONSIVE - MÓDULO PARTE
    ============================================== */
