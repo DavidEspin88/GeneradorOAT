@@ -194,21 +194,69 @@
                         </div>
                     </section>
 
-                    <!-- AUTORIDAD/GRUPO ASIGNADA LA SEGURIDAD -->
+
+
+                    <!-- ✅ AUTORIDAD/GRUPO ASIGNADA LA SEGURIDAD - DEBE QUEDAR -->
                     <section class="autoridad-container" id="autoridadContainer">
                         <div class="autoridad-group">
                             <label for="autoridadSeguridad">
-                                <i class="fa-solid fa-user-shield"></i> AUTORIDAD/GRUPO ASIGNADA LA SEGURIDAD:
+                                <i class="fa-solid fa-user-shield"></i>
+                                AUTORIDAD/GRUPO ASIGNADA LA SEGURIDAD:
                             </label>
                             <input type="text" id="autoridadSeguridad" name="autoridadSeguridad"
                                 placeholder="Ej: Capitán Pérez / Grupo de Seguridad Alpha" class="autoridad-input">
                             <span id="autoridadInfo" class="autoridad-info">
-                                <i class="fa-regular fa-circle-info"></i> Ingrese la autoridad o grupo asignado
+                                <i class="fa-solid fa-circle-info"></i> Ingrese la autoridad o grupo asignado
+                            </span>
+                        </div>
+                        
+                    </section>
+                                        <!-- ===== TIPO DE SEGURIDAD (PMI / PPL) ===== -->
+                    <section class="tipo-seguridad-container" id="tipoSeguridadContainer">
+                        <div class="tipo-seguridad-group">
+                            <label for="tipoSeguridadSelect">
+                                <i class="fa-solid fa-shield-halved"></i>
+                                TIPO DE SEGURIDAD:
+                            </label>
+                            <select id="tipoSeguridadSelect" class="tipo-seguridad-select">
+                                <option value="PMI">SEGURIDAD PMI</option>
+                                <option value="PPL">SEGURIDAD PPL</option>
+                            </select>
+                            <span id="tipoSeguridadInfo" class="tipo-seguridad-info">
+                                <i class="fa-solid fa-circle-info"></i>
+                                Seleccione el tipo de seguridad para la operación
                             </span>
                         </div>
                     </section>
 
-                    <!-- ORIGEN Y DESTINO -->
+                    <!-- ===== CENTRO DE PRIVACIÓN DE LIBERTAD (PPL) ===== -->
+                    <section class="cpl-container" id="cplContainer" style="display: none;">
+                        <div class="cpl-group">
+                            <label for="cplSelect">
+                                <i class="fa-solid fa-prison"></i>
+                                CENTRO DE PRIVACIÓN DE LIBERTAD:
+                            </label>
+                            <select id="cplSelect" class="cpl-select" disabled>
+                                <option value="">-- Seleccionar CPL --</option>
+                                <option value="CPL-PORTOVIEJO" data-provincia="Manabí"
+                                    data-nombre="Centro de Privación de Libertad (CPL) Nro. 4 (PORTOVIEJO)">
+                                    Centro de Privación de Libertad (CPL) Nro. 4 (PORTOVIEJO)
+                                </option>
+                                <option value="CPL-JIPIJAPA" data-provincia="Manabí"
+                                    data-nombre="Centro de Privación de Libertad (CPL) Manabí Nro. 2 (JIPIJAPA)">
+                                    Centro de Privación de Libertad (CPL) Manabí Nro. 2 (JIPIJAPA)
+                                </option>
+                            </select>
+                            <span id="cplInfo" class="cpl-info">
+                                <i class="fa-solid fa-circle-info"></i>
+                                Seleccione el centro de privación de libertad
+                            </span>
+                        </div>
+
+
+                    </section>
+
+                    <!-- ✅ ORIGEN Y DESTINO -->
                     <section class="origen-destino-container" id="origenDestinoContainer">
                         <div class="origen-destino-group">
                             <div class="select-group">
@@ -236,20 +284,21 @@
                         </div>
                     </section>
 
-                    <!-- GRUPO/UNIDAD RESPONSABLE -->
+                    <!-- ✅ UNIDAD RESPONSABLE - DEBE QUEDAR -->
                     <section class="unidad-responsable-container" id="unidadResponsableContainer">
                         <div class="unidad-responsable-group">
                             <label for="unidadResponsableSelect">
-                                <i class="fa-solid fa-users"></i> GRUPO/UNIDAD RESPONSABLE:
+                                <i class="fa-solid fa-users"></i> A QUIEN ENTERGO LA SEGURIDAD?:
                             </label>
                             <select id="unidadResponsableSelect" class="unidad-select">
                                 <option value="">-- Seleccionar Unidad --</option>
                             </select>
                             <span id="unidadResponsableInfo" class="unidad-info">
-                                <i class="fa-regular fa-circle-info"></i> Unidad responsable de la operación
+                                <i class="fa-solid fa-circle-info"></i>Unidad responsable de la operación
                             </span>
                         </div>
                     </section>
+
 
                     <!-- ===== FILTROS DE BÚSQUEDA ===== -->
                     <section class="filtros-container" id="filtrosContainer">

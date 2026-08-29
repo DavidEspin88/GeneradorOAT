@@ -275,7 +275,18 @@ async _enviarGoogleDocs() {
         }
     } catch (error) {
         console.error('❌ Error al enviar la información:', error);
-        alert('❌ Error al enviar la información. No se pudo conectar con Google Apps Script.\n\n' + error.message);
+        // ✅ P-18: un fallo de red en ESTE punto (esperando la respuesta)
+        // no significa que el documento no se haya creado — Apps Script
+        // pudo haber terminado del lado del servidor igual. Se advierte
+        // explícitamente para evitar que el usuario reintente y genere
+        // un documento duplicado en Drive sin necesidad.
+        alert(
+            '⚠️ Se perdió la conexión esperando la respuesta de Google Apps Script.\n\n' +
+            'El documento PUEDE haberse creado igual del lado de Google, aunque este ' +
+            'aviso de error haya aparecido. Antes de volver a intentarlo, revisa la ' +
+            'carpeta de Drive para confirmar si ya se generó, y evita así duplicados.\n\n' +
+            'Detalle técnico: ' + error.message
+        );
     } finally {
         if (this.btnGoogleDocs) {
             this.btnGoogleDocs.disabled = false;

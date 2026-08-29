@@ -48,7 +48,12 @@ export class AppController {
             unidadResponsableInfo: document.getElementById('unidadResponsableInfo'),
             // ✅ Nuevo botón para generar documentos en lote desde los
             // checkboxes marcados en la tabla.
-            btnGenerarSeleccion: document.getElementById('btnGenerarSeleccion')
+            btnGenerarSeleccion: document.getElementById('btnGenerarSeleccion'),
+            tipoSeguridadSelect: document.getElementById('tipoSeguridadSelect'),
+            cplSelect: document.getElementById('cplSelect'),
+            cplContainer: document.getElementById('cplContainer'),
+            cplInfo: document.getElementById('cplInfo')
+
         };
 
         // Sub-controladores
@@ -66,7 +71,7 @@ export class AppController {
         this.datosExcel = [];
         this.filaSeleccionada = null;
         this.gruposSeleccionados = [];
-        
+
         // ✅ Configuración
         this.configuracion = null;
 
@@ -76,42 +81,42 @@ export class AppController {
 
     async inicializar() {
         console.log('🚀 Inicializando App Controller...');
-        
-                // ✅ CARGAR CONFIGURACIÓN DESDE GOOGLE SHEETS
-         try {
-        this.configuracion = await cargarConfiguracionCompleta();
-        if (this.configuracion && Object.keys(this.configuracion).length > 0) {
-            // ✅ Verificar que los datos estén completos
-            const tieneDatos = this.configuracion.tiposOperacion && 
-                              this.configuracion.tiposOperacion.length > 0;
-            
-            if (tieneDatos) {
-                console.log('✅ Configuración cargada correctamente');
-                console.log(`📊 Tipos de operación: ${this.configuracion.tiposOperacion?.length || 0}`);
-                console.log(`📊 Tareas generales: ${this.configuracion.tareasGenerales?.length || 0}`);
-                console.log(`📊 Documentos: ${this.configuracion.documentos?.length || 0}`);
+
+        // ✅ CARGAR CONFIGURACIÓN DESDE GOOGLE SHEETS
+        try {
+            this.configuracion = await cargarConfiguracionCompleta();
+            if (this.configuracion && Object.keys(this.configuracion).length > 0) {
+                // ✅ Verificar que los datos estén completos
+                const tieneDatos = this.configuracion.tiposOperacion &&
+                    this.configuracion.tiposOperacion.length > 0;
+
+                if (tieneDatos) {
+                    console.log('✅ Configuración cargada correctamente');
+                    console.log(`📊 Tipos de operación: ${this.configuracion.tiposOperacion?.length || 0}`);
+                    console.log(`📊 Tareas generales: ${this.configuracion.tareasGenerales?.length || 0}`);
+                    console.log(`📊 Documentos: ${this.configuracion.documentos?.length || 0}`);
+                } else {
+                    console.warn('⚠️ Configuración sin datos, usando fallback');
+                    this.configuracion = null;
+                }
             } else {
-                console.warn('⚠️ Configuración sin datos, usando fallback');
+                console.warn('⚠️ Configuración vacía, usando valores por defecto');
                 this.configuracion = null;
             }
-        } else {
-            console.warn('⚠️ Configuración vacía, usando valores por defecto');
+        } catch (error) {
+            console.warn('⚠️ Error al cargar configuración:', error);
             this.configuracion = null;
         }
-    } catch (error) {
-        console.warn('⚠️ Error al cargar configuración:', error);
-        this.configuracion = null;
-    }
-        
+
         // ✅ PASAR CONFIGURACIÓN AL GENERADOR
         if (this.documentGenerator && this.configuracion) {
             this.documentGenerator.setConfiguracion(this.configuracion);
         }
-        
+
         this.cargarSelectores();
         this.cargarLugares();
-        this.cargarUnidadesResponsables();  
-        this.configurarEventosTabla(); 
+        this.cargarUnidadesResponsables();
+        this.configurarEventosTabla();
 
         this.configurarEventos();
         this.configurarEventosLugares();
@@ -123,37 +128,37 @@ export class AppController {
 
 
 
-configurarEventosTabla() {
-    this.tableController.setOnFilaSeleccionada((grupo, key, numAccion) => {
-        console.log('📋 Callback onFilaSeleccionada ejecutado');
-        if (grupo && grupo.operaciones) {
-            this.detailModalController.mostrar(
-                grupo.operaciones,
-                numAccion,
-                grupo.operaciones.length
-            );
-        } else {
-            alert('No hay registros para mostrar en detalle');
-        }
-    });
+    configurarEventosTabla() {
+        this.tableController.setOnFilaSeleccionada((grupo, key, numAccion) => {
+            console.log('📋 Callback onFilaSeleccionada ejecutado');
+            if (grupo && grupo.operaciones) {
+                this.detailModalController.mostrar(
+                    grupo.operaciones,
+                    numAccion,
+                    grupo.operaciones.length
+                );
+            } else {
+                alert('No hay registros para mostrar en detalle');
+            }
+        });
 
-    this.tableController.setOnVerOrden((grupo, numAccion) => {
-        console.log('👁 Vista previa de Orden de Operaciones:', numAccion);
-        this.mostrarVistaPrevia(grupo);
-    });
+        this.tableController.setOnVerOrden((grupo, numAccion) => {
+            console.log('👁 Vista previa de Orden de Operaciones:', numAccion);
+            this.mostrarVistaPrevia(grupo);
+        });
 
-    this.tableController.setOnSeleccionCambiada((cantidad) => {
-        this.actualizarBotonGenerarSeleccion(cantidad > 0);
-    });
+        this.tableController.setOnSeleccionCambiada((cantidad) => {
+            this.actualizarBotonGenerarSeleccion(cantidad > 0);
+        });
 
-    // ✅ CONFIGURAR FILTROS (asegurar que se llama)
-    this._configurarFiltros();
-}
+        // ✅ CONFIGURAR FILTROS (asegurar que se llama)
+        this._configurarFiltros();
+    }
 
     /**
      * ✅ Carga los selectores de oficiales
      */
-cargarSelectores() {
+    cargarSelectores() {
         try {
             const oficiales = getOficiales();
             const funciones = getFunciones();
@@ -228,9 +233,9 @@ cargarSelectores() {
             });
         }
     }
-/**
-     * Configura eventos de lugares
-     */
+    /**
+         * Configura eventos de lugares
+         */
     configurarEventosLugares() {
         if (this.elements.origenSelect) {
             this.elements.origenSelect.addEventListener('change', () => {
@@ -314,9 +319,9 @@ cargarSelectores() {
         }
     }
 
-     /**
-     * Configura eventos principales
-     */
+    /**
+    * Configura eventos principales
+    */
     configurarEventos() {
         if (this.elements.btnGenerar) {
             this.elements.btnGenerar.addEventListener('click', () => this.onGenerarDocumento());
@@ -334,7 +339,95 @@ cargarSelectores() {
         this.dateController.setOnDateChange((fecha) => {
             console.log('📅 Fecha actualizada:', fecha);
         });
+            // ✅ NUEVO: Configurar eventos de tipo de seguridad (PMI/PPL)
+    this._configurarEventosTipoSeguridad();
     }
+
+/**
+ * Configura eventos para el selector de tipo de seguridad (PMI/PPL)
+ * y el selector de Centro de Privación de Libertad (CPL)
+ */
+_configurarEventosTipoSeguridad() {
+    const tipoSeguridadSelect = this.elements.tipoSeguridadSelect;
+    const cplSelect = this.elements.cplSelect;
+    const cplContainer = this.elements.cplContainer;
+    const cplInfo = this.elements.cplInfo;
+
+    // Si no existe el selector, salir (no romper)
+    if (!tipoSeguridadSelect) {
+        console.warn('⚠️ Selector de tipo de seguridad no encontrado');
+        return;
+    }
+
+    // --- Evento: cambio de tipo de seguridad ---
+    tipoSeguridadSelect.addEventListener('change', () => {
+        const tipo = tipoSeguridadSelect.value;
+        
+        if (tipo === 'PPL') {
+            // Habilitar selector CPL
+            if (cplSelect) {
+                cplSelect.disabled = false;
+                cplSelect.value = ''; // Limpiar selección previa
+            }
+            if (cplContainer) {
+                cplContainer.style.display = 'block';
+                // Usamos timeout para la animación
+                setTimeout(() => {
+                    cplContainer.classList.add('active');
+                }, 10);
+            }
+            if (cplInfo) {
+                cplInfo.textContent = '⚠️ Obligatorio seleccionar un CPL';
+                cplInfo.className = 'cpl-info required';
+                cplInfo.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Obligatorio seleccionar un CPL';
+            }
+        } else {
+            // PMI - deshabilitar y ocultar selector CPL
+            if (cplSelect) {
+                cplSelect.disabled = true;
+                cplSelect.value = '';
+            }
+            if (cplContainer) {
+                cplContainer.classList.remove('active');
+                cplContainer.style.display = 'none';
+            }
+            if (cplInfo) {
+                cplInfo.textContent = 'Seleccione el centro de privación de libertad';
+                cplInfo.className = 'cpl-info';
+                cplInfo.innerHTML = '<i class="fa-regular fa-circle-info"></i> Seleccione el centro de privación de libertad';
+            }
+        }
+    });
+
+    // --- Evento: cambio de CPL ---
+    if (cplSelect) {
+        cplSelect.addEventListener('change', () => {
+            if (cplSelect.value) {
+                const option = cplSelect.selectedOptions[0];
+                const nombre = option?.dataset?.nombre || cplSelect.value;
+                if (cplInfo) {
+                    cplInfo.textContent = `✅ ${nombre}`;
+                    cplInfo.className = 'cpl-info';
+                    cplInfo.style.color = '#28a745';
+                    cplInfo.innerHTML = `<i class="fa-regular fa-circle-check"></i> ${nombre}`;
+                }
+            } else {
+                if (cplInfo) {
+                    cplInfo.textContent = '⚠️ Obligatorio seleccionar un CPL';
+                    cplInfo.className = 'cpl-info required';
+                    cplInfo.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Obligatorio seleccionar un CPL';
+                }
+            }
+        });
+    }
+
+    // --- Disparar evento inicial para establecer estado correcto ---
+    // Esto asegura que si el usuario ya tiene seleccionado "PPL" al cargar,
+    // el campo CPL se muestre habilitado
+    if (tipoSeguridadSelect.value === 'PPL') {
+        tipoSeguridadSelect.dispatchEvent(new Event('change'));
+    }
+}
 
     /**
      * ✅ Habilita/deshabilita el botón "Generar Documento desde selección"
@@ -346,58 +439,58 @@ cargarSelectores() {
             this.elements.btnGenerarSeleccion.style.opacity = habilitado ? '1' : '0.5';
         }
     }
-/**
- * ✅ Configura los eventos de filtros
- */
-_configurarFiltros() {
-    console.log('🔍 Configurando filtros...');
+    /**
+     * ✅ Configura los eventos de filtros
+     */
+    _configurarFiltros() {
+        console.log('🔍 Configurando filtros...');
 
-    const filtros = [
-        { id: 'filtroTipoOperacion', campo: 'tipoOperacion' },
-        { id: 'filtroNumeroAccion', campo: 'numeroAccion' },
-        { id: 'filtroCanton', campo: 'canton' },
-        { id: 'filtroParroquia', campo: 'parroquia' },
-        { id: 'filtroSector', campo: 'sector' }
-    ];
+        const filtros = [
+            { id: 'filtroTipoOperacion', campo: 'tipoOperacion' },
+            { id: 'filtroNumeroAccion', campo: 'numeroAccion' },
+            { id: 'filtroCanton', campo: 'canton' },
+            { id: 'filtroParroquia', campo: 'parroquia' },
+            { id: 'filtroSector', campo: 'sector' }
+        ];
 
-    // ✅ Conectar cada input con su evento
-    filtros.forEach(({ id, campo }) => {
-        const input = document.getElementById(id);
-        if (input) {
-            console.log(`✅ Filtro conectado: ${id}`);
-            input.addEventListener('input', (e) => {
-                const valor = e.target.value;
-                console.log(`🔍 Filtrando por ${campo}: "${valor}"`);
+        // ✅ Conectar cada input con su evento
+        filtros.forEach(({ id, campo }) => {
+            const input = document.getElementById(id);
+            if (input) {
+                console.log(`✅ Filtro conectado: ${id}`);
+                input.addEventListener('input', (e) => {
+                    const valor = e.target.value;
+                    console.log(`🔍 Filtrando por ${campo}: "${valor}"`);
+                    if (this.tableController) {
+                        this.tableController.setFiltros({ [campo]: valor });
+                    } else {
+                        console.warn('⚠️ tableController no disponible');
+                    }
+                });
+            } else {
+                console.warn(`⚠️ Elemento no encontrado: ${id}`);
+            }
+        });
+
+        // ✅ Botón limpiar filtros
+        const btnLimpiar = document.getElementById('btnLimpiarFiltros');
+        if (btnLimpiar) {
+            btnLimpiar.addEventListener('click', () => {
+                console.log('🧹 Limpiando filtros...');
+                filtros.forEach(({ id }) => {
+                    const input = document.getElementById(id);
+                    if (input) {
+                        input.value = '';
+                    }
+                });
                 if (this.tableController) {
-                    this.tableController.setFiltros({ [campo]: valor });
-                } else {
-                    console.warn('⚠️ tableController no disponible');
+                    this.tableController.limpiarFiltros();
                 }
             });
         } else {
-            console.warn(`⚠️ Elemento no encontrado: ${id}`);
+            console.warn('⚠️ Botón "Limpiar filtros" no encontrado');
         }
-    });
-
-    // ✅ Botón limpiar filtros
-    const btnLimpiar = document.getElementById('btnLimpiarFiltros');
-    if (btnLimpiar) {
-        btnLimpiar.addEventListener('click', () => {
-            console.log('🧹 Limpiando filtros...');
-            filtros.forEach(({ id }) => {
-                const input = document.getElementById(id);
-                if (input) {
-                    input.value = '';
-                }
-            });
-            if (this.tableController) {
-                this.tableController.limpiarFiltros();
-            }
-        });
-    } else {
-        console.warn('⚠️ Botón "Limpiar filtros" no encontrado');
     }
-}
     /**
      * Actualiza el estado del botón generar
      */
@@ -405,8 +498,8 @@ _configurarFiltros() {
         if (this.elements.btnGenerar) {
             this.elements.btnGenerar.disabled = !habilitado;
             this.elements.btnGenerar.style.opacity = habilitado ? '1' : '0.5';
-            this.elements.btnGenerar.title = habilitado 
-                ? 'Generar OAT con el grupo seleccionado' 
+            this.elements.btnGenerar.title = habilitado
+                ? 'Generar OAT con el grupo seleccionado'
                 : 'Selecciona un grupo de la tabla';
         }
     }
@@ -429,7 +522,7 @@ _configurarFiltros() {
             this.tableController.renderizar(grupos, (grupo, key, numAccion) => {
                 this.filaSeleccionada = grupo;
                 this.actualizarBotonGenerar(true);
-                
+
                 if (grupo && grupo.operaciones && grupo.operaciones.length > 0) {
                     this.detailModalController.mostrar(
                         grupo.operaciones,
@@ -441,8 +534,8 @@ _configurarFiltros() {
 
             const totalGrupos = Object.keys(grupos).length;
             Renderers.mostrarEstadoCarga(
-                this.elements.estadoCarga, 
-                `✅ ${totalGrupos} OATs agrupadas (${datos.length} operaciones)`, 
+                this.elements.estadoCarga,
+                `✅ ${totalGrupos} OATs agrupadas (${datos.length} operaciones)`,
                 'success'
             );
 
@@ -468,8 +561,8 @@ _configurarFiltros() {
         } catch (error) {
             console.error('❌ Error al cargar Excel:', error);
             Renderers.mostrarEstadoCarga(
-                this.elements.estadoCarga, 
-                `❌ Error: ${error.message}`, 
+                this.elements.estadoCarga,
+                `❌ Error: ${error.message}`,
                 'error'
             );
             alert('Error al cargar el Excel: ' + error.message);
@@ -479,120 +572,136 @@ _configurarFiltros() {
 
     // ... resto de métodos (cargarUnidadesResponsables, cargarLugares, cargarSelectores, etc.) ...
 
-   /**
-     * ✅ Construye los bloques HTML y el payload completo para UN grupo
-     * (OAT). Se usa tanto para la vista previa en el modal como para el
-     * envío individual y el envío en lote — así toda la lógica de
-     * extracción vive en un solo lugar.
-     * @param {Object} grupo - Grupo de operaciones (una fila de la tabla)
-     * @returns {{payload: Object, bloquesHtml: Array, numAccion: string, fechaParaDocumento: Date}}
-     */
-    _construirDatosDocumento(grupo) {
-        const comandanteNombre = this.elements.comandanteSelect?.value || '';
-        const oficialA3Nombre = this.elements.oficialSelect?.value || '';
-        const funcionCmdtId = this.elements.funcionComandanteSelect?.value || '';
-        const funcionOficialId = this.elements.funcionOficialSelect?.value || '';
+    /**
+      * ✅ Construye los bloques HTML y el payload completo para UN grupo
+      * (OAT). Se usa tanto para la vista previa en el modal como para el
+      * envío individual y el envío en lote — así toda la lógica de
+      * extracción vive en un solo lugar.
+      * @param {Object} grupo - Grupo de operaciones (una fila de la tabla)
+      * @returns {{payload: Object, bloquesHtml: Array, numAccion: string, fechaParaDocumento: Date}}
+      */
+_construirDatosDocumento(grupo) {
+    const comandanteNombre = this.elements.comandanteSelect?.value || '';
+    const oficialA3Nombre = this.elements.oficialSelect?.value || '';
+    const funcionCmdtId = this.elements.funcionComandanteSelect?.value || '';
+    const funcionOficialId = this.elements.funcionOficialSelect?.value || '';
 
-        const comandanteGrado = getGradoByNombre(comandanteNombre);
-        const oficialA3Grado = getGradoByNombre(oficialA3Nombre);
-        const funcionCmdtNombre = getFuncionById(funcionCmdtId);
-        const funcionOficialNombre = getFuncionById(funcionOficialId);
+    const comandanteGrado = getGradoByNombre(comandanteNombre);
+    const oficialA3Grado = getGradoByNombre(oficialA3Nombre);
+    const funcionCmdtNombre = getFuncionById(funcionCmdtId);
+    const funcionOficialNombre = getFuncionById(funcionOficialId);
 
-        const autoridadSeguridad = this.elements.autoridadSeguridad?.value?.trim() || '';
-        const origen = this.elements.origenSelect?.value || '';
-        const destino = this.elements.destinoSelect?.value || '';
-        const origenCoordenadas = getCoordenadasByLugar(origen) || '';
-        const destinoCoordenadas = getCoordenadasByLugar(destino) || '';
-        const unidadResponsable = this.elements.unidadResponsableSelect?.value || '';
-        const unidadDescripcion = getDescripcionByUnidad(unidadResponsable) || '';
+    const autoridadSeguridad = this.elements.autoridadSeguridad?.value?.trim() || '';
+    const origen = this.elements.origenSelect?.value || '';
+    const destino = this.elements.destinoSelect?.value || '';
+    const origenCoordenadas = getCoordenadasByLugar(origen) || '';
+    const destinoCoordenadas = getCoordenadasByLugar(destino) || '';
+    const unidadResponsable = this.elements.unidadResponsableSelect?.value || '';
+    const unidadDescripcion = getDescripcionByUnidad(unidadResponsable) || '';
 
-        const numAccion = grupo.numero || '7299';
-        const datosCombinados = combinarOperaciones(grupo.operaciones);
+    // ✅ OBTENER NUEVOS VALORES DE TIPO DE SEGURIDAD
+    const tipoSeguridad = this.elements.tipoSeguridadSelect?.value || 'PMI';
+    const cplSelect = this.elements.cplSelect;
+    const cplOption = cplSelect?.selectedOptions?.[0];
+    const cplNombre = cplOption?.dataset?.nombre || '';
+    const cplProvincia = cplOption?.dataset?.provincia || '';
 
+    const numAccion = grupo.numero || '7299';
+    const datosCombinados = combinarOperaciones(grupo.operaciones);
 
-        let fechaParaDocumento = this.dateController.getFechaSeleccionada();
-        if (!fechaParaDocumento || isNaN(fechaParaDocumento.getTime())) {
-            fechaParaDocumento = new Date();
-            console.warn('⚠️ Fecha no válida, usando fecha actual:', fechaParaDocumento);
-        }
-
-        this.documentGenerator.setDatos(
-            datosCombinados,
-            { nombre: comandanteNombre, funcion: funcionCmdtId },
-            { nombre: oficialA3Nombre, funcion: funcionOficialId },
-            numAccion,
-            fechaParaDocumento,
-            autoridadSeguridad,
-            origen,
-            destino,
-            origenCoordenadas,
-            destinoCoordenadas,
-            unidadResponsable,
-            unidadDescripcion
-        );
-
-        const bloquesHtml = this.documentGenerator.generarDocumentoCompleto();
-
-        const datosProcesados = extraerSeccionesDeBloques(bloquesHtml, datosCombinados);
-        const tablas = extraerTablas(bloquesHtml);
-        const tareas = extraerTareasEstructuradas(bloquesHtml);
-        const instrucciones = extraerInstruccionesCoordinacion(bloquesHtml);
-        const documentosExtraidos = extraerDocumentos(bloquesHtml);
-        const anexosExtraidos = extraerAnexos(bloquesHtml);
-
-        const horaInicioOp = datosCombinados.horaInicio || '0030';
-        let fechaMilitarGrupo = '';
-        try {
-            fechaMilitarGrupo = this.dateController.getFechaFormateada(horaInicioOp);
-        } catch (error) {
-            console.warn('⚠️ Error al formatear fecha, usando valor por defecto:', error);
-            fechaMilitarGrupo = `310000-JUL-26`;
-        }
-
-        const fechaEncabezado = generarFechaHoraEncabezado();
-
-        const payload = {
-            unidadResponsable: unidadResponsable || 'GT AGUILA (GOMAI)',
-            unidadDescripcion: unidadDescripcion,
-            numOrden: numAccion,
-            fechaMilitarGrupo: fechaMilitarGrupo,
-            fechaEncabezado: fechaEncabezado,
-
-            asunto: datosProcesados.asunto,
-            situacion: datosProcesados.situacion,
-            mision: datosProcesados.mision,
-            conceptoOperacion: datosProcesados.concepto,
-
-            tareasGenerales: tareas.tareasGenerales || [],
-            tareasEscudrilla: tareas.tareasEscudrilla || [],
-            tareasConductor: tareas.tareasConductor || [],
-
-            tablas: tablas || {},
-
-            instruccionesCoordinacion: instrucciones || '',
-
-            comandante: comandanteNombre,
-            gradoComandante: comandanteGrado,
-            funcionComandante: funcionCmdtNombre,
-            oficialA3: oficialA3Nombre,
-            gradoOficialA3: oficialA3Grado,
-            funcionA3: funcionOficialNombre,
-            autoridadSeguridad: autoridadSeguridad,
-
-            origen: origen,
-            origenCoordenadas: origenCoordenadas,
-            destino: destino,
-            destinoCoordenadas: destinoCoordenadas,
-
-            documentos: documentosExtraidos,
-            anexos: anexosExtraidos,
-
-            tipoOperacion: datosCombinados.tipoOperacion || '',
-            canton: datosCombinados.canton || 'MANTA'
-        };
-
-        return { payload, bloquesHtml, numAccion, fechaParaDocumento };
+    let fechaParaDocumento = this.dateController.getFechaSeleccionada();
+    if (!fechaParaDocumento || isNaN(fechaParaDocumento.getTime())) {
+        fechaParaDocumento = new Date();
+        console.warn('⚠️ Fecha no válida, usando fecha actual:', fechaParaDocumento);
     }
+
+    // ✅ AHORA PASAMOS LOS NUEVOS PARÁMETROS
+    this.documentGenerator.setDatos(
+        datosCombinados,
+        { nombre: comandanteNombre, funcion: funcionCmdtId },
+        { nombre: oficialA3Nombre, funcion: funcionOficialId },
+        numAccion,
+        fechaParaDocumento,
+        autoridadSeguridad,
+        origen,
+        destino,
+        origenCoordenadas,
+        destinoCoordenadas,
+        unidadResponsable,
+        unidadDescripcion,
+        // ✅ NUEVOS PARÁMETROS
+        tipoSeguridad,
+        cplNombre,
+        cplProvincia
+    );
+
+    const bloquesHtml = this.documentGenerator.generarDocumentoCompleto();
+
+    const datosProcesados = extraerSeccionesDeBloques(bloquesHtml, datosCombinados);
+    const tablas = extraerTablas(bloquesHtml);
+    const tareas = extraerTareasEstructuradas(bloquesHtml);
+    const instrucciones = extraerInstruccionesCoordinacion(bloquesHtml);
+    const documentosExtraidos = extraerDocumentos(bloquesHtml);
+    const anexosExtraidos = extraerAnexos(bloquesHtml);
+
+    const horaInicioOp = datosCombinados.horaInicio || '0030';
+    let fechaMilitarGrupo = '';
+    try {
+        fechaMilitarGrupo = this.dateController.getFechaFormateada(horaInicioOp);
+    } catch (error) {
+        console.warn('⚠️ Error al formatear fecha, usando valor por defecto:', error);
+        fechaMilitarGrupo = `310000-JUL-26`;
+    }
+
+    const fechaEncabezado = generarFechaHoraEncabezado();
+
+    const payload = {
+        unidadResponsable: unidadResponsable || 'GT AGUILA (GOMAI)',
+        unidadDescripcion: unidadDescripcion,
+        numOrden: numAccion,
+        fechaMilitarGrupo: fechaMilitarGrupo,
+        fechaEncabezado: fechaEncabezado,
+
+        asunto: datosProcesados.asunto,
+        situacion: datosProcesados.situacion,
+        mision: datosProcesados.mision,
+        conceptoOperacion: datosProcesados.concepto,
+
+        tareasGenerales: tareas.tareasGenerales || [],
+        tareasEscudrilla: tareas.tareasEscudrilla || [],
+        tareasConductor: tareas.tareasConductor || [],
+
+        tablas: tablas || {},
+
+        instruccionesCoordinacion: instrucciones || '',
+
+        comandante: comandanteNombre,
+        gradoComandante: comandanteGrado,
+        funcionComandante: funcionCmdtNombre,
+        oficialA3: oficialA3Nombre,
+        gradoOficialA3: oficialA3Grado,
+        funcionA3: funcionOficialNombre,
+        autoridadSeguridad: autoridadSeguridad,
+
+        origen: origen,
+        origenCoordenadas: origenCoordenadas,
+        destino: destino,
+        destinoCoordenadas: destinoCoordenadas,
+
+        // ✅ NUEVOS CAMPOS EN EL PAYLOAD (opcional, por si Apps Script los necesita)
+        tipoSeguridad: tipoSeguridad,
+        cplNombre: cplNombre,
+        cplProvincia: cplProvincia,
+
+        documentos: documentosExtraidos,
+        anexos: anexosExtraidos,
+
+        tipoOperacion: datosCombinados.tipoOperacion || '',
+        canton: datosCombinados.canton || 'MANTA'
+    };
+
+    return { payload, bloquesHtml, numAccion, fechaParaDocumento };
+}
 
     /**
      * ✅ Envía un payload ya construido a Apps Script (doPost).
@@ -654,6 +763,28 @@ _configurarFiltros() {
     async onGenerarDocumento() {
         console.log('🔄 Generando documento (fila seleccionada)...');
 
+          // ✅ OBTENER NUEVOS VALORES DE TIPO DE SEGURIDAD
+    const tipoSeguridad = this.elements.tipoSeguridadSelect?.value || 'PMI';
+    const cplSelect = this.elements.cplSelect;
+    const cplValue = cplSelect?.value || '';
+    const cplOption = cplSelect?.selectedOptions?.[0];
+    const cplNombre = cplOption?.dataset?.nombre || '';
+    const cplProvincia = cplOption?.dataset?.provincia || '';
+
+    // ✅ VALIDACIÓN: Si es PPL, debe tener un CPL seleccionado
+    if (tipoSeguridad === 'PPL' && !cplValue) {
+        alert('⚠️ Debe seleccionar un Centro de Privación de Libertad (CPL) para el tipo de seguridad PPL');
+        if (cplSelect) {
+            cplSelect.focus();
+            cplSelect.style.borderColor = '#d32f2f';
+            setTimeout(() => {
+                cplSelect.style.borderColor = '';
+            }, 3000);
+        }
+        return;
+    }
+
+
         const validacionOficiales = validarSeleccionOficiales(
             this.elements.comandanteSelect?.value || '',
             this.elements.oficialSelect?.value || ''
@@ -678,6 +809,8 @@ _configurarFiltros() {
         const contenedorPreview = document.createElement('div');
         contenedorPreview.innerHTML = bloquesHtml.join('');
         this.modalController.mostrar(contenedorPreview, numAccion, fechaParaDocumento);
+
+
 
         // Envío
         this.elements.btnGenerar.disabled = true;
@@ -776,8 +909,8 @@ _configurarFiltros() {
         if (this.elements.btnGenerar) {
             this.elements.btnGenerar.disabled = !habilitado;
             this.elements.btnGenerar.style.opacity = habilitado ? '1' : '0.5';
-            this.elements.btnGenerar.title = habilitado 
-                ? 'Generar OAT con el grupo seleccionado' 
+            this.elements.btnGenerar.title = habilitado
+                ? 'Generar OAT con el grupo seleccionado'
                 : 'Selecciona un grupo de la tabla';
         }
     }
@@ -810,7 +943,7 @@ function extraerTareasCompletas(bloques) {
 
     const tareasGenerales = [];
     const tareasGeneralesSubs = [];
-    
+
     const itemsGenerales = div.querySelectorAll('.item-letra');
     itemsGenerales.forEach(el => {
         const texto = el.querySelector('.text-doc');
@@ -829,7 +962,7 @@ function extraerTareasCompletas(bloques) {
 
     const tareasEscudrilla = [];
     const tareasEscudrillaSubs = [];
-    
+
     const itemsEscuadrilla = div.querySelectorAll('.item-letra-85');
     const itemsComandante = Array.from(itemsEscuadrilla).slice(0, 14);
     itemsComandante.forEach(el => {
@@ -931,12 +1064,12 @@ function extraerAnexos(bloques) {
 function extraerTablas(bloques) {
     const div = document.createElement('div');
     div.innerHTML = bloques.join('');
-    
+
     const tablas = {};
-    
+
     // Buscar todas las tablas con clase 'tabla-operaciones'
     const elementosTabla = div.querySelectorAll('.tabla-operaciones');
-    
+
     elementosTabla.forEach((tabla) => {
         // Identificar el tipo de tabla por su clase adicional
         let tipo = 'generica';
@@ -958,7 +1091,7 @@ function extraerTablas(bloques) {
                 anchos.push(match ? parseFloat(match[1]) : null);
             });
         }
-        
+
         // Extraer filas
         const tbody = tabla.querySelector('tbody');
         const rows = [];
@@ -971,7 +1104,7 @@ function extraerTablas(bloques) {
                 if (row.length > 0) rows.push(row);
             });
         }
-        
+
         // Guardar la tabla
         tablas[tipo] = {
             headers: headers,
@@ -979,27 +1112,27 @@ function extraerTablas(bloques) {
             anchos: anchos // ✅ ej. [25, 35, 20, 20] — porcentajes desde TABLA_COLUMNAS
         };
     });
-    
+
     return tablas;
 }
 
 function extraerTareasEstructuradas(bloques) {
     const div = document.createElement('div');
     div.innerHTML = bloques.join('');
-    
+
     // ==============================================
     // 1. TAREAS GENERALES
     // ==============================================
     const tareasGenerales = [];
     const itemsGenerales = div.querySelectorAll('.item-letra');
-    
+
     itemsGenerales.forEach(el => {
         const texto = el.querySelector('.text-doc');
         const item = {
             texto: texto ? texto.textContent.trim() : '',
             subs: []
         };
-        
+
         // Buscar sub-items (viñetas)
         let sub = el.nextElementSibling;
         while (sub && sub.classList.contains('item-vineta-99')) {
@@ -1009,27 +1142,27 @@ function extraerTareasEstructuradas(bloques) {
             }
             sub = sub.nextElementSibling;
         }
-        
+
         // Solo agregar si tiene texto
         if (item.texto || item.subs.length > 0) {
             tareasGenerales.push(item);
         }
     });
-    
+
     // ==============================================
     // 2. TAREAS ESCUADRILLA
     // ==============================================
     const tareasEscudrilla = [];
     const itemsEscuadrilla = div.querySelectorAll('.item-letra-85');
     const itemsComandante = Array.from(itemsEscuadrilla).slice(0, 14);
-    
+
     itemsComandante.forEach(el => {
         const texto = el.querySelector('.text-doc');
         const item = {
             texto: texto ? texto.textContent.trim() : '',
             subs: []
         };
-        
+
         let sub = el.nextElementSibling;
         while (sub && sub.classList.contains('item-vineta-106')) {
             const subTexto = sub.querySelector('.text-doc');
@@ -1038,25 +1171,25 @@ function extraerTareasEstructuradas(bloques) {
             }
             sub = sub.nextElementSibling;
         }
-        
+
         if (item.texto || item.subs.length > 0) {
             tareasEscudrilla.push(item);
         }
     });
-    
+
     // ==============================================
     // 3. TAREAS CONDUCTOR
     // ==============================================
     const tareasConductor = [];
     const itemsConductor = Array.from(itemsEscuadrilla).slice(-4);
-    
+
     itemsConductor.forEach(el => {
         const texto = el.querySelector('.text-doc');
         if (texto) {
             tareasConductor.push(texto.textContent.trim());
         }
     });
-    
+
     return {
         tareasGenerales,
         tareasEscudrilla,

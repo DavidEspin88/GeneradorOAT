@@ -27,6 +27,9 @@ import { documentos, anexos } from "../core/constants.js";
 import { filtrarPorTipoOperacion } from "../models/operacion.js";
 import { filtrarPorTipoOperacion as filtrarConfig } from '../utils/sheets-config.js';
 
+
+
+
 export class DocumentGenerator {
   constructor() {
     
@@ -127,6 +130,53 @@ export class DocumentGenerator {
     return encontrado ? encontrado.tipoOperacionId : null;
   }
 
+/**
+ * Normaliza el valor de hora final, detectando "FIN OPERACIONES" y variantes
+ * @param {string|number} horaFinal - Valor de hora final del Excel
+ * @param {string} valorPorDefecto - Valor por defecto si no se detecta nada
+ * @returns {string} - Hora normalizada o "FIN DE OPERACIONES"
+ */
+_normalizarHoraFinal(horaFinal, valorPorDefecto = "2359") {
+    if (!horaFinal && horaFinal !== 0) return valorPorDefecto;
+    
+    const horaStr = String(horaFinal).trim().toUpperCase();
+    
+    // ✅ Detectar variantes de "FIN OPERACIONES"
+    const patronesFin = [
+        'FIN OPS',
+        'FIN OPERACIONES',
+        'FIN DE OPERACIONES',
+        'FIN DE OPS',
+        'FIN OPE',
+        'FIN OPERACION',
+        'FIN OP',
+        'F/OPS',
+        'F/OPERACIONES',
+        'FIN'
+    ];
+    
+    for (const patron of patronesFin) {
+        if (horaStr.includes(patron)) {
+            console.log(`📋 Hora final detectada como "FIN OPERACIONES": "${horaFinal}"`);
+            return 'FIN DE OPERACIONES';
+        }
+    }
+    
+    // Si tiene ":" o es numérico, procesar normalmente
+    let resultado = horaStr;
+    if (resultado.includes(":")) {
+        resultado = resultado.replace(":", "");
+    }
+    // Extraer solo números
+    resultado = resultado.replace(/\D/g, '');
+    if (resultado === '') return valorPorDefecto;
+    
+    while (resultado.length < 4) {
+        resultado = '0' + resultado;
+    }
+    return resultado.slice(0, 4);
+}
+
   /**
    * Configura todos los datos para la generación del documento
    * @param {Object} datos - Datos combinados de la operación
@@ -155,6 +205,9 @@ export class DocumentGenerator {
     destinoCoordenadas,
     unidadResponsable,
     unidadDescripcion,
+    tipoSeguridad = 'PMI',
+    cplNombre = '',
+    cplProvincia = '',
   ) {
     this.datos = datos;
     this.comandante = comandante;
@@ -171,12 +224,26 @@ export class DocumentGenerator {
     console.log(`📍 Destino: ${this.destino} - ${this.destinoCoordenadas}`);
     this.unidadResponsable = unidadResponsable || "";
     this.unidadDescripcion = unidadDescripcion || "";
+    // ✅ GUARDAR NUEVOS VALORES
+    this.tipoSeguridad = tipoSeguridad || 'PMI';
+    this.cplNombre = cplNombre || '';
+    this.cplProvincia = cplProvincia || '';
+
+    console.log(`🔒 Tipo de seguridad: ${this.tipoSeguridad}`);
+    if (this.tipoSeguridad === 'PPL') {
+        console.log(`🏛️ CPL seleccionado: ${this.cplNombre} (${this.cplProvincia})`);
+    }
+
+    console.log(`📍 Origen: ${this.origen} - ${this.origenCoordenadas}`);
+    console.log(`📍 Destino: ${this.destino} - ${this.destinoCoordenadas}`);
+    console.log(`👥 Unidad responsable: ${this.unidadResponsable} - ${this.unidadDescripcion}`);
 
     console.log(`📍 Origen: ${this.origen} - ${this.origenCoordenadas}`);
     console.log(`📍 Destino: ${this.destino} - ${this.destinoCoordenadas}`);
     console.log(
-      `👥 Unidad responsable: ${this.unidadResponsable} - ${this.unidadDescripcion}`,
+      `👥 Unidad responsable: ${this.unidadResponsable} - ${this.unidadDescripcion}`,    
     );
+    
   }
 
   /**
@@ -195,16 +262,21 @@ generarDocumentoCompleto() {
     const tipoNormalizado = tipoOperacion.replace(/\s+/g, " ").trim();
     console.log("📋 tipoNormalizado:", tipoNormalizado);
 
-    // ==========================================================
     // ✅ NUEVO: OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS
-    // DEBE IR AL PRINCIPIO, ANTES QUE CUALQUIER OTRA CONDICIÓN
-    // ==========================================================
-    // ✅ Usar includes para detectar tanto "AREAS" como "ÁREAS"
     if (tipoNormalizado.includes("OPERACIONES SOSTENIBLES") || 
         tipoNormalizado.includes("OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS") ||
         tipoNormalizado === "OPERACIONES SOSTENIBLES EN AREAS CRITICAS") {
         console.log("📋 ✅ GENERANDO OPERACIONES SOSTENIBLES EN ÁREAS CRÍTICAS");
         return this._generarDocumentoSostenibles();
+    }
+
+    // ✅ MEJORADO: DETECCIÓN DE PMI
+    // Detecta cualquier texto que CONTENGA "PMI" (ej: "PROTEC Y SEG PMI AUTORIDADES...")
+    if (tipoNormalizado === "PMI" || 
+        tipoNormalizado.includes("PMI") ||
+        tipoNormalizado.includes("PROTEC Y SEG PMI")) {
+        console.log("📋 Generando documento tipo PMI (detectado por contenido)");
+        return this._generarDocumentoPMI();
     }
 
     // Si es REGISTRO, usar el formato específico
@@ -256,12 +328,6 @@ generarDocumentoCompleto() {
         tipoNormalizado.includes("CELEC")) {
         console.log("📋 Generando documento tipo APOYO MIN. AMBIENTE ENERGÍA");
         return this._generarDocumentoApoyoMinAmbienteEnergia();
-    }
-
-    // Si es PMI, usar el formato específico
-    if (tipoNormalizado === "PMI") {
-        console.log("📋 Generando documento tipo PMI");
-        return this._generarDocumentoPMI();
     }
 
     // Si es INTERVENCIÓN, usar el formato específico
@@ -700,7 +766,7 @@ generarDocumentoCompleto() {
       '<div class="item-letra-92"><span class="marcador">a.</span><p class="text-doc">Pistolas Pietro Beretta, CZ, Browning</p></div>',
     );
     bloques.push(
-      '<div class="item-letra-92"><span class="marcador">b.</span><p class="text-doc">Subametralladora Colt, Uzi </p></div>',
+      '<div class="item-letra-92"><span class="marcador">b.</span><p class="text-doc">Subametralladora Colt</p></div>',
     );
     bloques.push(
       '<div class="item-letra-92"><span class="marcador">c.</span><p class="text-doc">Fusil M4A2, M16, Fal, ParaFal</p></div>',
@@ -904,7 +970,7 @@ generarDocumentoCompleto() {
     );
     bloques.push('<div class="vacio"></div>');
     bloques.push(`
-            <p class="texto-situacion">El cantón Bahía enfrenta actualmente una situación de seguridad compleja marcada por el incremento de hechos violentos, la cual se ve agravada por factores propios del sector, entre ellos la presencia del CPL Manabí Nro.4, que constituye un punto sensible frente a posibles influencias del crimen organizado, tanto al interior como al exterior del CRS. se ha evidenciado la concentración de familiares de personas privadas de la libertad (PPL) en viviendas cercanas al CRS, mismos estarían incrementando actividades de apoyo externo, facilitando actividades ilícitas y generando condiciones que pueden afectar la seguridad ciudadana y el orden público en los sectores aledaños.</p>
+            <p class="texto-situacion">El cantón ${canton} enfrenta actualmente una situación de seguridad compleja marcada por el incremento de hechos violentos, la cual se ve agravada por factores propios del sector, entre ellos la presencia del CPL Manabí Nro.4, que constituye un punto sensible frente a posibles influencias del crimen organizado, tanto al interior como al exterior del CRS. se ha evidenciado la concentración de familiares de personas privadas de la libertad (PPL) en viviendas cercanas al CRS, mismos estarían incrementando actividades de apoyo externo, facilitando actividades ilícitas y generando condiciones que pueden afectar la seguridad ciudadana y el orden público en los sectores aledaños.</p>
         `);
     bloques.push(`
             <p class="texto-situacion-2">Además, las vulnerabilidades en el Sistema Hidrocarburífero Nacional, especialmente en tramos y zonas rurales del cantón da lugar a actividades ilícitas como perforaciones clandestinas, acopio y transporte ilegal de combustibles. Estas condiciones han sido aprovechadas por estructuras delictivas vinculadas al crimen organizado, que combinan delitos como microtráfico, extorsión y sicariato con economías ilegales asociadas al sector hidrocarburífero, incrementando la violencia y el riesgo en el cantón.</p>
@@ -945,7 +1011,7 @@ generarDocumentoCompleto() {
       rutaCompleta = sector;
     }
 
-    const misionTexto = `El GT ÁGUILA (GOMAI), realizará un Camex interior, el día ${fechaInicioMision} hasta ${fechaFinMision}, en el "${rutaCompleta}", con el objetivo de prevenir fugas de reos, garantizar la seguridad del personal y de la población en general, así como para cumplir con el proceso legal y de rehabilitación del recluso, aplicando la protección de derechos humanos, libertades y garantías de los ciudadanos en estricta observancia a Ley Orgánica que Regula el Uso Legítimo de la Fuerza.`;
+    const misionTexto = `El {unidad}, realizará un Camex interior, el día ${fechaInicioMision} hasta ${fechaFinMision}, en el "${rutaCompleta}", con el objetivo de prevenir fugas de reos, garantizar la seguridad del personal y de la población en general, así como para cumplir con el proceso legal y de rehabilitación del recluso, aplicando la protección de derechos humanos, libertades y garantías de los ciudadanos en estricta observancia a Ley Orgánica que Regula el Uso Legítimo de la Fuerza.`;
 
     bloques.push(`<p class="texto-mision">${misionTexto}</p>`);
     bloques.push('<div class="vacio"></div>');
@@ -1142,7 +1208,7 @@ generarDocumentoCompleto() {
       '<div class="item-letra-92"><span class="marcador">b.</span><p class="text-doc">Subametralladora Colt</p></div>',
     );
     bloques.push(
-      '<div class="item-letra-92"><span class="marcador">c.</span><p class="text-doc">Fusil M4A2</p></div>',
+      '<div class="item-letra-92"><span class="marcador">c.</span><p class="text-doc">Fusil M4A2, M16, Fal, ParaFal</p></div>',
     );
 
     // --- V. ENLACE, MEDIOS Y MANDO ---
@@ -2340,7 +2406,7 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en los e
     const fechaFinStr = generarFechaDocumento(fechaFinalObj, horaFinalMilitar);
     const fechaEncabezado = generarFechaHoraEncabezado();
     const siglas = obtenerSiglas(
-      this.comandante?.nombre || "Johnny Minchala Redrován",
+      this.comandante?.nombre || "Johnny Wilson Minchala Redrován",
     );
 
     // --- ASUNTO ---
@@ -2526,7 +2592,7 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en los e
       '<div class="item-letra-92"><span class="marcador">a.</span><p class="text-doc">Pistolas Pietro Beretta, CZ, Browning</p></div>',
     );
     bloques.push(
-      '<div class="item-letra-92"><span class="marcador">b.</span><p class="text-doc">Subametralladora Colt, Uzi</p></div>',
+      '<div class="item-letra-92"><span class="marcador">b.</span><p class="text-doc">Subametralladora Colt</p></div>',
     );
     bloques.push(
       '<div class="item-letra-92"><span class="marcador">c.</span><p class="text-doc">Fusil M4A2, M16, Fal, ParaFal</p></div>',
@@ -2705,8 +2771,9 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en los e
    * Genera documento para tipo PMI (Protección de autoridades)
    * @returns {Array} - Bloques HTML del documento
    */
-  _generarDocumentoPMI() {
+_generarDocumentoPMI() {
     console.log("🛑 GENERANDO PMI - Formato específico");
+    console.log(`🔒 Tipo de seguridad: ${this.tipoSeguridad}`);
 
     const bloques = [];
 
@@ -2714,32 +2781,32 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en los e
     const unidad = "GT ÁGUILA (GOMAI)";
 
     // --- PROCESAR HORAS ---
-    let horaInicio = this.datos?.horaInicio || "0030";
+    let horaInicio = this.datos?.horaInicio || "";
     horaInicio = String(horaInicio).trim();
-    if (horaInicio === "") horaInicio = "0030";
+    if (horaInicio === "") horaInicio = "HORA INCIO";
     if (horaInicio.includes(":")) {
-      horaInicio = horaInicio.replace(":", "");
+        horaInicio = horaInicio.replace(":", "");
     }
     while (horaInicio.length < 4) {
-      horaInicio = "0" + horaInicio;
+        horaInicio = "0" + horaInicio;
     }
     horaInicio = horaInicio.slice(0, 4);
 
-    let horaFinal = this.datos?.horaFinal || "2359";
+    let horaFinal = this.datos?.horaFinal || "";
     horaFinal = String(horaFinal).trim();
-    if (horaFinal === "") horaFinal = "2359";
+    if (horaFinal === "") horaFinal = "23:59";
     if (horaFinal.includes(":")) {
-      horaFinal = horaFinal.replace(":", "");
+        horaFinal = horaFinal.replace(":", "");
     }
     while (horaFinal.length < 4) {
-      horaFinal = "0" + horaFinal;
+        horaFinal = "0" + horaFinal;
     }
     horaFinal = horaFinal.slice(0, 4);
 
     // --- DATOS DINÁMICOS ---
     const sector = this.datos?.sector || "Sector no especificado";
     const canton = this.datos?.canton || "Cantón no especificado";
-    const numeroOrden = this.numeroAccion || "7299";
+    const numeroOrden = this.numeroAccion || "sin numero";
 
     // --- DATOS DEL PANEL HTML ---
     const autoridadSeguridad = this.autoridadSeguridad || "No especificada";
@@ -2750,13 +2817,10 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en los e
     const unidadResponsable = this.unidadResponsable || "No especificada";
     const unidadDescripcion = this.unidadDescripcion || "";
 
-    // Construir origen con coordenadas
-    const origenConCoordenadas = origenCoordenadas
-      ? `${origen} (Coord. ${origenCoordenadas})`
-      : origen;
-    const destinoConCoordenadas = destinoCoordenadas
-      ? `${destino} (Coord. ${destinoCoordenadas})`
-      : destino;
+    // ✅ NUEVOS DATOS
+    const tipoSeguridad = this.tipoSeguridad || 'PMI';
+    const cplNombre = this.cplNombre || '';
+    const cplProvincia = this.cplProvincia || '';
 
     // --- FECHAS CON MANEJO DE CRUCE DE MEDIANOCHE ---
     const fechaBase = this.fechaDocumento || new Date();
@@ -2765,12 +2829,18 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en los e
     const fechaInicioStr = generarFechaDocumento(fechaBase, horaInicio);
     const fechaFinStr = generarFechaDocumento(fechaFinalObj, horaFinal);
     const fechaEncabezado = generarFechaHoraEncabezado();
+
     const siglas = obtenerSiglas(
-      this.comandante?.nombre || "Johnny Minchala Redrován",
+        this.comandante?.nombre || "Johnny Wilson Minchala Redrován",
     );
 
-    // --- ASUNTO ---
-    const asunto = "Protección y Seguridad PMI de autoridades y funcionarios.";
+    // --- ASUNTO DINÁMICO SEGÚN TIPO ---
+    let asunto;
+    if (tipoSeguridad === 'PPL') {
+        asunto = "Protección y Seguridad PMI a Autoridades y Funcionarios (Nacionales y Extranjeros).";
+    } else {
+        asunto = "Protección y Seguridad PMI a Autoridades y Funcionarios (Nacionales y Extranjeros).";
+    }
 
     // ==============================================
     // 1. ENCABEZADO
@@ -2790,7 +2860,7 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en los e
     // ==============================================
     const numeroOrdenCompleto = formatearNumeroOrden(numeroOrden);
     bloques.push(
-      `<div class="titulo-documento">ORDEN DE ACCIÓN TÁCTICA Nro. ${numeroOrdenCompleto}</div>`,
+        `<div class="titulo-documento">ORDEN DE ACCIÓN TÁCTICA Nro. ${numeroOrdenCompleto}</div>`,
     );
     bloques.push('<div class="vacio"></div>');
 
@@ -2798,7 +2868,7 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en los e
     // 3. ASUNTO
     // ==============================================
     bloques.push(
-      `<p class="parrafo-asunto"><span class="asunto-label">&nbsp;&nbsp;Asunto:</span>&nbsp;&nbsp;\t${asunto}</p>`,
+        `<p class="parrafo-asunto"><span class="asunto-label">&nbsp;&nbsp;Asunto:</span>&nbsp;&nbsp;\t${asunto}</p>`,
     );
     bloques.push('<div class="vacio"></div>');
 
@@ -2808,34 +2878,63 @@ const misionTexto = `El PMP del ${unidad}, ejecutará operaciones CAMEX en los e
     bloques.push(...this._generarBloqueDocumentos());
 
     // ==============================================
-    // 5. I. SITUACIÓN (TEXTO DINÁMICO CON CANTÓN)
+    // 5. I. SITUACIÓN (DINÁMICA)
     // ==============================================
     bloques.push(
-      '<div class="titulo-romano"><span class="marcador">I.</span>SITUACIÓN</div>',
+        '<div class="titulo-romano"><span class="marcador">I.</span>SITUACIÓN</div>',
     );
     bloques.push('<div class="vacio"></div>');
-    const cantonTexto = formatearNombreCanton(canton);
-    bloques.push(`
-        <p class="texto-situacion">El cantón ${cantonTexto} atraviesa actualmente una crítica situación de seguridad debido al elevado índice de violencia, producto principalmente de la presencia y disputa de organizaciones criminales vinculadas al narcotráfico y economías ilegales, que aprovechan su ubicación estratégica como puerto y punto logístico en la costa ecuatoriana.</p>
-    `);
-    bloques.push(`
-        <p class="texto-situacion-2">La pugna por el control territorial, rutas de salida de droga, microtráfico, extorsión y otros delitos conexos ha generado un incremento sostenido de muertes violentas, ataques armados y hechos delictivos, afectando tanto a sectores periféricos como a zonas urbanas y comerciales. Esta realidad ha deteriorado la percepción de seguridad ciudadana, alterando la dinámica social y económica del cantón, en este contexto, la violencia en Manta no responde a hechos aislados, sino a un problema latente que combina crimen organizado, vulnerabilidad social y economías ilícitas.</p>
-    `);
+
+    let situacionTextos = [];
+
+    if (tipoSeguridad === 'PPL') {
+        // ✅ TEXTO PPL
+        const cplDisplay = cplNombre || 'centro de privación de libertad seleccionado';
+        situacionTextos.push(
+            `Actualmente, el sistema penitenciario del país, específicamente el ${cplDisplay}, enfrenta escenarios de vulnerabilidad y riesgo crítico debido a la presencia interna de Personas Privadas de la Libertad (PPL) de alta peligrosidad vinculadas a Grupos de Delincuencia Organizada (GDO). Esta condición incrementa de manera latente las amenazas de amotinamientos, evasiones, ataques armados externos y retaliaciones delictivas.`
+        );
+    } else {
+        // ✅ TEXTO PMI ORIGINAL
+        situacionTextos.push(
+            `El cantón ${canton} atraviesa actualmente una crítica situación de seguridad debido al elevado índice de violencia, producto principalmente de la presencia y disputa de organizaciones criminales vinculadas al narcotráfico y economías ilegales, que aprovechan su ubicación estratégica como puerto y punto logístico en la costa ecuatoriana.`
+        );
+        situacionTextos.push(
+            `La pugna por el control territorial, rutas de salida de droga, microtráfico, extorsión y otros delitos conexos ha generado un incremento sostenido de muertes violentas, ataques armados y hechos delictivos, afectando tanto a sectores periféricos como a zonas urbanas y comerciales. Esta realidad ha deteriorado la percepción de seguridad ciudadana, alterado la dinámica social y económica del cantón, en este contexto, la violencia en Manta no responde a hechos aislados, sino a un problema latente que combina crimen organizado, vulnerabilidad social y economías ilícitas.`
+        );
+    }
+
+    situacionTextos.forEach((texto, index) => {
+        const clase = index === 0 ? 'texto-situacion' : 'texto-situacion-2';
+        bloques.push(`<p class="${clase}">${texto}</p>`);
+    });
     bloques.push('<div class="vacio"></div>');
 
     // ==============================================
-    // 6. II. MISIÓN (TEXTO DINÁMICO PARA PMI)
+    // 6. II. MISIÓN (DINÁMICA)
     // ==============================================
     bloques.push(
-      '<div class="titulo-romano"><span class="marcador">II.</span>MISIÓN</div>',
+        '<div class="titulo-romano"><span class="marcador">II.</span>MISIÓN</div>',
     );
     bloques.push('<div class="vacio"></div>');
 
     const fechasMision = calcularFechasMision(this.operacionesAgrupadas, this.fechaDocumento);
-const fechaInicioMision = fechasMision.fechaInicioStr;
-const fechaFinMision = fechasMision.fechaFinStr;
+    const fechaInicioMision = fechasMision.fechaInicioStr;
+    const fechaFinMision = fechasMision.fechaFinStr;
 
-const misionTexto = `El PMP del ${unidad}, brindará seguridad armada y protección a ${autoridadSeguridad}, desde el día ${fechaInicioMision} hasta ${fechaFinMision} en la ruta ${sector}, con el propósito de mitigar riesgos y garantizar la seguridad física de PMI, respetando los derechos humanos y en estricta observancia a ley orgánica que regula el uso legítimo de la fuerza.`;
+    let misionTexto;
+
+    if (tipoSeguridad === 'PPL') {
+        // ✅ MISIÓN PPL
+        const destinoConCoord = destinoCoordenadas ? 
+            `${destino}` : 
+            destino;
+        const cplDisplay = cplNombre || 'centro de privación de libertad';
+        
+        misionTexto = `El ${unidad} en coordinación con la Policía Nacional y el SNAI, brindará seguridad armada durante el traslado de PPL desde el ${cplDisplay} hasta el sector de ${destinoConCoord}, el ${fechaInicioMision} hasta ${fechaFinMision}, a fin de garantizar el traslado seguro y sin interferencias de las Personas Privadas de la Libertad (PPL), para evitar amotinamientos, fugas o ataques armados de GDO en el trayecto, garantizando la vida e integridad del personal y el éxito de la operación, respetando los derechos humanos y en estricta observancia a ley orgánica que regula el uso legítimo de la fuerza.`;
+    } else {
+        // ✅ MISIÓN PMI ORIGINAL
+        misionTexto = `El PMP del ${unidad}, brindará seguridad armada y protección a ${autoridadSeguridad}, desde el día ${fechaInicioMision} hasta ${fechaFinMision} en la ruta ${sector}, con el propósito de mitigar riesgos y garantizar la seguridad física de PMI, respetando los derechos humanos y en estricta observancia a ley orgánica que regula el uso legítimo de la fuerza.`;
+    }
 
     bloques.push(`<p class="texto-mision">${misionTexto}</p>`);
     bloques.push('<div class="vacio"></div>');
@@ -2844,67 +2943,137 @@ const misionTexto = `El PMP del ${unidad}, brindará seguridad armada y protecci
     // 7. III. EJECUCIÓN
     // ==============================================
     bloques.push(
-      '<div class="titulo-romano"><span class="marcador">III.</span>EJECUCIÓN</div>',
+        '<div class="titulo-romano"><span class="marcador">III.</span>EJECUCIÓN</div>',
     );
     bloques.push('<div class="vacio"></div>');
 
     // --- A. CONCEPTO DE LA OPERACIÓN ---
     bloques.push(
-      '<div class="titulo-letra"><span class="marcador">A.</span>CONCEPTO DE LA OPERACIÓN</div>',
+        '<div class="titulo-letra"><span class="marcador">A.</span>CONCEPTO DE LA OPERACIÓN</div>',
     );
 
-    // Construir la ruta con origen y destino
-    const rutaTexto = `${origenConCoordenadas} – ${destinoConCoordenadas}`;
-    const unidadEncargada = unidadDescripcion || unidadResponsable;
+    let conceptos = [];
 
-    const conceptoTexto = `El PMP del ${unidad}, se hará cargo de la seguridad armada del personal ${autoridadSeguridad}, en la ruta ${rutaTexto}, donde realizará la entrega formal de la custodia del personal, a ${unidadEncargada}, hasta la base aérea de Taura.`;
+    if (tipoSeguridad === 'PPL') {
+        // ✅ CONCEPTO PPL
+        const provinciaDestino = this._obtenerProvinciaDestino(destino);
+        const provinciaOrigen = cplProvincia || 'Manabí';
+        const cplDisplay = cplNombre || 'centro de privación de libertad';
+    const destinoConCoord = destinoCoordenadas ? 
+        `${destino} (Coord. ${destinoCoordenadas})` : 
+        destino;
 
-    bloques.push(`<p class="texto-concepto">${conceptoTexto}</p>`);
-    bloques.push(`
-        <p class="texto-concepto">Esta operación se realizará con el objetivo de resguardar la integridad del personal transportado, observando estrictamente los principios de necesidad, legalidad, proporcionalidad y precaución en el empleo de la fuerza, con pleno respeto a los derechos humanos y en cumplimiento de la Ley Orgánica que Regula el Uso Legítimo de la Fuerza.</p>
-    `);
-    bloques.push(`
-        <p class="texto-concepto">Asimismo, la patrulla deberá mantenerse en alerta permanente ante algún evento y/o intento de acto hostil EN FLAGRANCIA donde se requiera la intervención rápida y oportuna del personal militar profesional CON ORDEN, de competencia legal de fuerzas armadas.</p>
-    `);
+               // ✅ LÓGICA ESPECIAL: Si origen es CPL Portoviejo y destino es La Cadena (Jipijapa)
+    let corredorVial = `${provinciaOrigen}-${provinciaDestino}`;
+    let limiteProvincias = `${provinciaOrigen} y ${provinciaDestino}`;
+    
+    const esOrigenPortoviejo = cplNombre && cplNombre.includes('PORTOVIEJO');
+    const esDestinoLaCadena = destino && destino.toLowerCase().includes('la cadena');
+    const esDestinoJipijapa = destino && destino.toLowerCase().includes('jipijapa');
+    
+    if (esOrigenPortoviejo && (esDestinoLaCadena || esDestinoJipijapa)) {
+        // ✅ Reemplazar con "MANABI - GUAYAS"
+        corredorVial = 'MANABI - GUAYAS';
+        limiteProvincias = 'Manabí y Guayas';
+        console.log(`📍 Ruta especial detectada: Portoviejo → La Cadena (Jipijapa) → corredor: ${corredorVial}`);
+    }
+
+    conceptos.push(
+        `El PMP del ${unidad} brindará seguridad armada y protección al ${autoridadSeguridad} desde el ${cplDisplay} hasta el sector de ${destinoConCoord}, límite entre la provincia de ${limiteProvincias}. Este desplazamiento se ejecuta con el fin de mitigar riesgos, salvaguardar el orden institucional y neutralizar posibles afectaciones a la seguridad del Estado. La operación demanda un despliegue de seguridad integral en rutas críticas, considerando la complejidad del corredor vial ${corredorVial} y la alta probabilidad de interferencias u hostilidades por parte de estructuras criminales aliadas en el trayecto, donde se hara la entrega formal de la seguridad al ${unidadResponsable}.`
+    );
+    } else {
+        // ✅ CONCEPTO PMI ORIGINAL
+        const rutaTexto = `${origen}  – ${destino} `;
+        const unidadEncargada = unidadDescripcion || unidadResponsable;
+
+        conceptos.push(
+            `El PMP del ${unidad}, se hará cargo de la seguridad armada del personal ${autoridadSeguridad}, en la ruta ${rutaTexto}, donde realizará la entrega formal de la custodia del personal de ${autoridadSeguridad}  , a ${unidadEncargada}.`
+        );
+        conceptos.push(
+            `Esta operación se realizará con el objetivo de resguardar la integridad del personal transportado, observando estrictamente los principios de necesidad, legalidad, proporcionalidad y precaución en el empleo de la fuerza, con pleno respeto a los derechos humanos y en cumplimiento de la Ley Orgánica que Regula el Uso Legítimo de la Fuerza.`
+        );
+        conceptos.push(
+            `Asimismo, la patrulla deberá mantenerse en alerta permanente ante algún evento y/o intento de acto hostil EN FLAGRANCIA donde se requiera la intervención rápida y oportuna del personal militar profesional CON ORDEN, de competencia legal de fuerzas armadas.`
+        );
+    }
+
+    conceptos.forEach((texto) => {
+        bloques.push(`<p class="texto-concepto">${texto}</p>`);
+    });
     bloques.push('<div class="vacio"></div>');
 
     // ==============================================
-    // 8. B. TAREAS GENERALES (REUTILIZADO)
+    // 8. B. TAREAS GENERALES (REUTILIZADO - SIN CAMBIOS)
     // ==============================================
     bloques.push(...this._generarTareasGenerales(false));
 
     // ==============================================
-    // 9. C. TAREAS ESPECÍFICAS (REUTILIZADO)
+    // 9. C. TAREAS ESPECÍFICAS (REUTILIZADO - SIN CAMBIOS)
     // ==============================================
     bloques.push(...this._generarTareasEspecificas());
 
     // ==============================================
-    // 10. D. INSTRUCCIONES DE COORDINACIÓN (REUTILIZADO)
+    // 10. D. INSTRUCCIONES DE COORDINACIÓN (REUTILIZADO - SIN CAMBIOS)
     // ==============================================
     bloques.push(...this._generarInstruccionesCoordinacion());
 
     // ==============================================
-    // 11. IV. ADMINISTRATIVAS Y LOGISTICA (REUTILIZADO)
+    // 11. IV. ADMINISTRATIVAS Y LOGISTICA (REUTILIZADO - SIN CAMBIOS)
     // ==============================================
     bloques.push(...this._generarAdministrativasLogistica());
 
     // ==============================================
-    // 12. V. ENLACE, MEDIOS Y MANDO (REUTILIZADO)
+    // 12. V. ENLACE, MEDIOS Y MANDO (REUTILIZADO - SIN CAMBIOS)
     // ==============================================
     bloques.push(...this._generarEnlaceMediosMando());
 
     // ==============================================
-    // 13. FIRMAS (REUTILIZADO)
+    // 13. FIRMAS (REUTILIZADO - SIN CAMBIOS)
     // ==============================================
     bloques.push(...this._generarFirmas());
 
     // ==============================================
-    // 14. ANEXOS (REUTILIZADO)
+    // 14. ANEXOS (REUTILIZADO - SIN CAMBIOS)
     // ==============================================
     bloques.push(...this._generarAnexos());
 
     return bloques;
-  }
+}
+
+/**
+ * Obtiene la provincia de un destino usando la estructura de datos existente
+ * @param {string} destino - Nombre del destino
+ * @returns {string} - Nombre de la provincia
+ */
+_obtenerProvinciaDestino(destino) {
+    // ✅ Mapeo de lugares a provincias
+    const mapaProvincias = {
+        'Manta': 'Manabí',
+        'Portoviejo': 'Manabí',
+        'Jipijapa': 'Manabí',
+        'Montecristi': 'Manabí',
+        'Guayaquil': 'Guayas',
+        'Quito': 'Pichincha',
+        'Taura': 'Guayas',
+        'La Cadena': 'Manabí',
+        'El Rodeo': 'Manabí',
+        'Ala de Combate 23': 'Manabí',
+        'CPL Manabí Nro. 4': 'Manabí',
+        'Puerto': 'Manabí'
+    };
+
+    // Buscar coincidencia parcial en el nombre del destino
+    for (const [key, value] of Object.entries(mapaProvincias)) {
+        if (destino && destino.toLowerCase().includes(key.toLowerCase())) {
+            return value;
+        }
+    }
+
+    // Si no se encuentra, usar valor por defecto
+    console.warn(`⚠️ No se encontró provincia para destino: ${destino}, usando "Manabí" como fallback`);
+    return 'Manabí';
+}
+
 
   // ==============================================
   // GENERADOR DE DOCUMENTOS - PARTE CAMEX COORD. P.N.
